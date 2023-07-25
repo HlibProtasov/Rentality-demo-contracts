@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@chainlink/contracts": "^0.6.1",
+    "@identity.com/gateway-protocol-eth": "^0.0.4",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@openzeppelin/contracts": "^4.8.1",
     "@testing-library/jest-dom": "^5.16.5",
