@@ -30,6 +30,16 @@
     "Rentality": "0x330f406bcF3a9e1D42C336C0Ae2b060285423a8c"
   },
   {
+    "name": "BaseGoerli",
+    "chainId": 84531,
+    "EthToUsdPriceFeedAddress": "0xcD2A119bD1F7DF95d706DE6F2057fDD45A0503E2",
+    "RentalityUserService": "0xF5d6E451600439BBd282B0001b56019E5F4662bf",
+    "RentalityTripService": "0x417886Ca72048E92E8Bf2082cf193ab8DB4ED09f",
+    "RentalityCurrencyConverter": "0x3E69da2133f87a3CC2602b351869046C2D8Aef2A",
+    "RentalityCarToken": "0xcC66CdAfc3C39d96651220975855202960C08747",
+    "Rentality": "0x12fB29Ed1f0E17605f488F640D49De29050cf855"
+  },
+  {
     "name": "Ganache",
     "chainId": 1337,
     "EthToUsdPriceFeedAddress": "",
