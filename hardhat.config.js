@@ -29,6 +29,11 @@ module.exports = {
       url: process.env.ALCHEMY_API_URL_SEPOLIA,
       accounts: [process.env.PRIVATE_KEY],
     },
+    baseSepolia: {
+      url: 'https://sepolia.base.org',
+      accounts: [process.env.PRIVATE_KEY],
+      gasPrice: 5000000,
+    },
   },
   solidity: {
     version: '0.8.17',

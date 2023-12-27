@@ -14,12 +14,15 @@
     "name": "Mumbai",
     "chainId": 80001,
     "EthToUsdPriceFeedAddress": "0x0715A7794a1dc8e42615F059dD6e406A6594651A",
-    "RentalityUtils": "0x887F7352412051d23F7d77aCfDcD7Ac722dC6b49",
-    "RentalityUserService": "",
-    "RentalityTripService": "",
-    "RentalityCurrencyConverter": "",
-    "RentalityCarToken": "",
-    "Rentality": ""
+    "RentalityUtils": "0x25b6416DcdcBe5b54A1204490313e0A751f76a2e",
+    "RentalityUserService": "0x9385440C47b344398a0799e0Bd2dc113B445CD69",
+    "RentalityCurrencyConverter": "0x183eC6184889Fa7bE96d2912D6012734838327B1",
+    "RentalityCarToken": "0x1CE08962deeC4D40A911B5ec6FE8f8Cde02E1785",
+    "RentalityPaymentService": "0x43066347F138A3892a54DCA68aEF626fEA0920DA",
+    "RentalityTripService": "0x103B7d3b0bd6c52D93b5ad428f5ccd2C17EcA5aF",
+    "RentalityPlatform": "0x958Fca8A369becBD5ae54cb0Bdf7D0E9c64b4292",
+    "RentalityGateway": "0x1c6a7Cc1B6D0674f432ebFDed3dcA329E21949fA",
+    "RentalityChatHelper": "0x9926fc79417666148cE8b50d3788cC805FCa1d87"
   },
   {
     "name": "Sepolia",
@@ -36,17 +39,31 @@
     "RentalityChatHelper": "0xB31993e4DB0087367274e5cD292186041bFB8AB8"
   },
   {
+    "name": "Base Sepolia",
+    "chainId": 84532,
+    "EthToUsdPriceFeedAddress": "0xF5d6E451600439BBd282B0001b56019E5F4662bf",
+    "RentalityUtils": "0x417886Ca72048E92E8Bf2082cf193ab8DB4ED09f",
+    "RentalityUserService": "0x3E69da2133f87a3CC2602b351869046C2D8Aef2A",
+    "RentalityCurrencyConverter": "0xcC66CdAfc3C39d96651220975855202960C08747",
+    "RentalityCarToken": "0x12fB29Ed1f0E17605f488F640D49De29050cf855",
+    "RentalityPaymentService": "0x1A4B926810fE9636d9e3a7e8394b735cd028EF1b",
+    "RentalityTripService": "0xeAFD2FF68d371A718AC046e5d5927C57F2A1a2a9",
+    "RentalityPlatform": "0x39ed4b6D2CA1d449Ad43cae8FB620c74e7Fca40a",
+    "RentalityGateway": "0x2624a37a0eB19630F0C6576074CBd8a63989d13f",
+    "RentalityChatHelper": "0x183eC6184889Fa7bE96d2912D6012734838327B1"
+  },
+  {
     "name": "Ganache",
     "chainId": 1337,
-    "EthToUsdPriceFeedAddress": "",
-    "RentalityUtils": "",
-    "RentalityUserService": "",
-    "RentalityCurrencyConverter": "",
-    "RentalityCarToken": "",
-    "RentalityPaymentService": "",
-    "RentalityTripService": "",
-    "RentalityPlatform": "",
-    "RentalityGateway": "",
-    "RentalityChatHelper": ""
+    "EthToUsdPriceFeedAddress": "0x9d6f3371638B0E9D2731AD81cfcBCCFDdc1c9528",
+    "RentalityUtils": "0xe6Dd227d67558C7b64d6ba3a0230cB462e6D6b07",
+    "RentalityUserService": "0x247E7E9133d8CA7B527e8DA65925d1F30294A28f",
+    "RentalityCurrencyConverter": "0xa55B7f43445D2e409638323B4c3De09F3A1B4df2",
+    "RentalityCarToken": "0x42e8d8929d0Cf2D6EDaB5B4F1aa42833aF80319d",
+    "RentalityPaymentService": "0x9394e7BcD7dcB21cbBE127C3472165FFFbc63f71",
+    "RentalityTripService": "0xc3cD482E2aa3b73b0F4b3099A04660Ba8F89a28f",
+    "RentalityPlatform": "0x210d87e7b5A327CbacA0A78d17657e91B8E95534",
+    "RentalityGateway": "0xAC37374ACAFEB2dac3c4E57d90B4865687b31844",
+    "RentalityChatHelper": "0xD2F52C4990aFaFE482fb69233F4fd2745C889BD2"
   }
 ]
