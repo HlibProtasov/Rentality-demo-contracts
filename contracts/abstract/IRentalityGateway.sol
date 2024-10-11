@@ -26,14 +26,15 @@ interface IRentalityGateway {
     string memory nickName,
     string memory mobilePhoneNumber,
     string memory profilePhoto,
-    bytes memory TCSignature
+    bytes memory TCSignature,
+    bytes32 hash
   ) external;
 
   /// @notice Set KYC information for a specific user based on Civic identity
   /// @param user The address of the user whose Civic KYC information is being set
   /// @param civicKycInfo The Civic KYC information structure containing the user's data
   /// @dev This function is used to set verified KYC information from the Civic platform
-  function setCivicKYCInfo(address user, Schemas.CivicKYCInfo memory civicKycInfo) external;
+  function setCivicKYCInfo(address user, Schemas.CivicKYCInfo memory civicKycInfo, bytes32) external;
 
   /// @notice Retrieves the KYC commission amount.
   /// @dev Calls the `getKycCommission` function from the `userService` contract.
@@ -67,7 +68,7 @@ interface IRentalityGateway {
   /// @notice Add a new car to the platform.
   /// @param request The request parameters for creating a new car.
   /// @return The ID of the newly added car.
-  function addCar(Schemas.CreateCarRequest memory request) external returns (uint);
+  function addCar(Schemas.CreateCarRequest memory request, bytes32 refferalHash) external returns (uint);
 
   /// @notice Update information for an existing car, without location.
   /// @param request the Update car parameters
@@ -77,11 +78,9 @@ interface IRentalityGateway {
   /// @notice This sets geo verification status to false.
   /// @param request the Update car parameters
   /// @param location Single string that contains the car location
-  /// @param geoApiKey the key to verify location by google geo api
   function updateCarInfoWithLocation(
     Schemas.UpdateCarInfoRequest memory request,
-    Schemas.SignedLocationInfo memory location,
-    string memory geoApiKey
+    Schemas.SignedLocationInfo memory location
   ) external;
 
   /// @notice Updates the token URI for a specific car
@@ -197,9 +196,13 @@ interface IRentalityGateway {
   /// and other relevant details depends on engine.
   function checkOutByHost(uint256 tripId, uint64[] memory panelParams) external;
 
+  /// @notice Confirms check-out for a trip.
+  /// @param tripId The ID of the trip.
+  function confirmCheckOut(uint256 tripId, bytes32) external;
+
   /// @notice Finish a trip as the host.
   /// @param tripId The ID of the trip to finish.
-  function finishTrip(uint256 tripId) external;
+  function finishTrip(uint256 tripId, bytes32) external;
 
   /// ------------------------------
   ///     GUEST
@@ -253,11 +256,7 @@ interface IRentalityGateway {
   /// @param tripId The ID of the trip.
   /// @param panelParams An array representing parameters related to fuel, odometer,
   /// and other relevant details depends on engine.
-  function checkOutByGuest(uint256 tripId, uint64[] memory panelParams) external;
-
-  /// @notice Confirms check-out for a trip.
-  /// @param tripId The ID of the trip.
-  function confirmCheckOut(uint256 tripId) external;
+  function checkOutByGuest(uint256 tripId, uint64[] memory panelParams, bytes32 refferalHash) external;
 
   /// ------------------------------
   /// CLAIMS functions
@@ -307,23 +306,23 @@ interface IRentalityGateway {
   /// INSURANCE functions
   /// ------------------------------
 
-/// @notice Retrieves insurance info
-/// @param host A boolean indicating whether to retrieve insurance for hosts (true) or guests (false)
-/// @return An array of insurance options available for the specified host status
-function getInsurancesBy(bool host) external view returns (Schemas.InsuranceDTO[] memory);
+  /// @notice Retrieves insurance info
+  /// @param host A boolean indicating whether to retrieve insurance for hosts (true) or guests (false)
+  /// @return An array of insurance options available for the specified host status
+  function getInsurancesBy(bool host) external view returns (Schemas.InsuranceDTO[] memory);
 
-/// @notice Retrieves insurance information for the guest
-/// @return An array of insurance information specific to the guest
-function getMyInsurancesAsGuest() external view returns (Schemas.InsuranceInfo[] memory);
+  /// @notice Retrieves insurance information for the guest
+  /// @return An array of insurance information specific to the guest
+  function getMyInsurancesAsGuest() external view returns (Schemas.InsuranceInfo[] memory);
 
-/// @notice Saves insurance information related to a specific trip
-/// @param tripId The ID of the trip for which the insurance information is being saved
-/// @param insuranceInfo A struct containing the details of the insurance to be saved
-function saveTripInsuranceInfo(uint tripId, Schemas.SaveInsuranceRequest memory insuranceInfo) external;
+  /// @notice Saves insurance information related to a specific trip
+  /// @param tripId The ID of the trip for which the insurance information is being saved
+  /// @param insuranceInfo A struct containing the details of the insurance to be saved
+  function saveTripInsuranceInfo(uint tripId, Schemas.SaveInsuranceRequest memory insuranceInfo) external;
 
-/// @notice Saves insurance information for a guest
-/// @param insuranceInfo A struct containing the details of the insurance requested by the guest
-function saveGuestInsurance(Schemas.SaveInsuranceRequest memory insuranceInfo) external;
+  /// @notice Saves insurance information for a guest
+  /// @param insuranceInfo A struct containing the details of the insurance requested by the guest
+  function saveGuestInsurance(Schemas.SaveInsuranceRequest memory insuranceInfo) external;
 
   /// ------------------------------
   /// GENERAL functions

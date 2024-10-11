@@ -15,8 +15,8 @@ import {RentalityCarDelivery} from '../features/RentalityCarDelivery.sol';
 import '../Schemas.sol';
 import {RentalityTripsQuery} from './RentalityTripsQuery.sol';
 import {CurrencyRate as ClaimCurrencyRate} from '../features/RentalityClaimService.sol';
+import {RentalityReferralProgram} from '../features/refferalProgram/RentalityReferralProgram.sol';
 import {RentalityInsurance} from '../payments/RentalityInsurance.sol';
-
 library RentalityQuery {
   /// @notice Checks if a car intersects with a trip's scheduled time.
   /// @dev This function verifies if the car for the given trip overlaps with the specified time interval.
@@ -234,9 +234,7 @@ library RentalityQuery {
     if (claim.status == Schemas.ClaimStatus.Paid) {
       (int rate, uint8 dec) = claimService.claimIdToCurrencyRate(claim.claimId);
       if (rate > 0) valueInEth = currencyConverterService.getFromUsd(currency, amount, rate, dec);
-    }
-    else 
-    (valueInEth, , ) = currencyConverterService.getFromUsdLatest(currency, amount);
+    } else (valueInEth, , ) = currencyConverterService.getFromUsdLatest(currency, amount);
     return valueInEth;
   }
 

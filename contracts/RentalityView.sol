@@ -17,6 +17,8 @@ import './libs/RentalityQuery.sol';
 import '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol';
 import './libs/RentalityTripsQuery.sol';
+import {RentalityReferralProgram} from './features/refferalProgram/RentalityReferralProgram.sol';
+
 error FunctionNotFound();
 /// @dev SAFETY: The linked library is not supported yet because it can modify the state or call
 ///  selfdestruct, as far as RentalityTripsQuery doesn't has this logic,
@@ -29,10 +31,11 @@ contract RentalityView is UUPSUpgradeable, Initializable {
 
   RentalityInsurance private insuranceService;
 
-  function updateServiceAddresses(RentalityContract memory contracts, address insurance) public {
+  RentalityReferralProgram private refferalService;
+  function updateServiceAddresses(RentalityContract memory contracts, address insuranceServiceAddress) public {
     require(addresses.userService.isAdmin(tx.origin), 'only Admin.');
     addresses = contracts;
-    insuranceService = RentalityInsurance(insurance);
+    insuranceService = RentalityInsurance(insuranceServiceAddress);
   }
 
   fallback(bytes calldata) external returns (bytes memory) {
@@ -107,7 +110,14 @@ contract RentalityView is UUPSUpgradeable, Initializable {
     Schemas.SearchCarParams memory searchParams,
     Schemas.LocationInfo memory pickUpInfo,
     Schemas.LocationInfo memory returnInfo
-  ) public view returns (Schemas.SearchCarWithDistance[] memory) {
+  )
+    public
+    view
+    returns (
+      // bool useRefferalPoints
+      Schemas.SearchCarWithDistance[] memory
+    )
+  {
     return
       addresses.searchSortedCars(
         tx.origin,
@@ -118,6 +128,7 @@ contract RentalityView is UUPSUpgradeable, Initializable {
         returnInfo,
         RentalityAdminGateway(addresses.adminService).getDeliveryServiceAddress(),
         address(insuranceService)
+        // address(refferalService)
       );
   }
 
@@ -175,13 +186,12 @@ contract RentalityView is UUPSUpgradeable, Initializable {
   // return addresses.getClaimsByGuest(tx.origin);
   // }
 
-  // not using
   /// @notice Gets detailed information about a specific claim.
   /// @dev Returns a structure containing information about the claim, associated trip, and car details.
   /// @param claimId ID of the claim.
   /// @return Full information about the claim.
   function getClaim(uint256 claimId) public view returns (Schemas.FullClaimInfo memory) {
-  return addresses.getClaim(claimId);
+    return addresses.getClaim(claimId);
   }
 
   /// @notice Get contact information for a specific trip on the Rentality platform.
@@ -253,7 +263,14 @@ contract RentalityView is UUPSUpgradeable, Initializable {
     address currency,
     Schemas.LocationInfo memory pickUpLocation,
     Schemas.LocationInfo memory returnLocation
-  ) public view returns (Schemas.CalculatePaymentsDTO memory) {
+  )
+    public
+    view
+    returns (
+      // bool useRefferalDiscount
+      Schemas.CalculatePaymentsDTO memory
+    )
+  {
     return
       RentalityUtils.calculatePaymentsWithDelivery(
         addresses,
@@ -263,6 +280,8 @@ contract RentalityView is UUPSUpgradeable, Initializable {
         pickUpLocation,
         returnLocation,
         insuranceService
+        // refferalService,
+        // useRefferalDiscount
       );
   }
   /// @notice Get chat information for trips hosted by the caller on the Rentality platform.
@@ -335,7 +354,8 @@ contract RentalityView is UUPSUpgradeable, Initializable {
     address paymentServiceAddress,
     address claimServiceAddress,
     address carDeliveryAddress,
-    address insuranceAddress
+    address insuranceAddress,
+    address refferalProgramAddress
   ) public initializer {
     addresses = RentalityContract(
       RentalityCarToken(carServiceAddress),
@@ -350,6 +370,7 @@ contract RentalityView is UUPSUpgradeable, Initializable {
       this
     );
     insuranceService = RentalityInsurance(insuranceAddress);
+    refferalService = RentalityReferralProgram(refferalProgramAddress);
   }
 
   function _authorizeUpgrade(address /*newImplementation*/) internal view override {

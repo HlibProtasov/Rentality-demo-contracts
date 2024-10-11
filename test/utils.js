@@ -8,6 +8,18 @@ const UserRole = {
   Admin: 3,
   KYCManager: 4,
 }
+const RefferalProgram = {
+  SetKYC: 0,
+  PassCivic: 1,
+  AddFirstCar: 2,
+  AddCar: 3,
+  CreateTrip: 4,
+  FinishTripAsHost: 5,
+  FinishTripAsGuest: 6,
+  UnlistedCar: 7,
+  Daily: 8,
+  DailyListing: 9,
+}
 
 const signTCMessage = async (user) => {
   const message =
@@ -234,6 +246,7 @@ function getMockCarRequest(seed, contractAddress, admin, locationI) {
   }
 }
 
+let zeroHash = ethers.zeroPadBytes(ethToken, 32)
 function createMockClaimRequest(tripId, amountToClaim) {
   return {
     tripId: tripId,
@@ -276,7 +289,7 @@ function getEmptySearchCarParams(seed) {
 }
 
 async function deployDefaultFixture() {
-  const [owner, admin, manager, host, guest, anonymous] = await ethers.getSigners()
+  const [owner, admin, manager, host, guest, anonymous, hashCreator] = await ethers.getSigners()
 
   const chainId = (await owner.provider?.getNetwork())?.chainId ?? -1
 
@@ -304,7 +317,11 @@ async function deployDefaultFixture() {
       RentalityUtils: await utils.getAddress(),
     },
   })
-  let TripsQuery = await ethers.getContractFactory('RentalityTripsQuery')
+  let TripsQuery = await ethers.getContractFactory('RentalityTripsQuery', {
+    libraries: {
+      RentalityUtils: await utils.getAddress(),
+    },
+  })
   let tripsQuery = await TripsQuery.deploy()
 
   const RentalityPlatform = await ethers.getContractFactory('RentalityPlatform', {
@@ -409,6 +426,23 @@ async function deployDefaultFixture() {
   ])
   await rentalityCarToken.waitForDeployment()
 
+  let RefferalLibFactory = await ethers.getContractFactory('RentalityRefferalLib')
+  let refferalLib = await RefferalLibFactory.deploy()
+  await refferalLib.waitForDeployment()
+
+  let ReffProgram = await ethers.getContractFactory('RentalityReferralProgram', {
+    libraries: {
+      RentalityRefferalLib: await refferalLib.getAddress(),
+    },
+  })
+
+  const refferalProgram = await upgrades.deployProxy(ReffProgram, [
+    await rentalityUserService.getAddress(),
+    await refferalLib.getAddress(),
+    await rentalityCarToken.getAddress(),
+  ])
+  await refferalProgram.waitForDeployment()
+
   const RentalityFloridaTaxes = await ethers.getContractFactory('RentalityFloridaTaxes')
 
   const rentalityFloridaTaxes = await upgrades.deployProxy(RentalityFloridaTaxes, [
@@ -476,6 +510,7 @@ async function deployDefaultFixture() {
     await claimService.getAddress(),
     await deliveryService.getAddress(),
     await insuranceService.getAddress(),
+    await refferalProgram.getAddress(),
   ])
   await rentalityView.waitForDeployment()
 
@@ -489,14 +524,15 @@ async function deployDefaultFixture() {
     await deliveryService.getAddress(),
     await rentalityView.getAddress(),
     await insuranceService.getAddress(),
+    await refferalProgram.getAddress(),
   ])
   await rentalityPlatform.waitForDeployment()
 
   const RentalityAdminGateway = await ethers.getContractFactory('RentalityAdminGateway', {
     signer: owner,
     libraries: {
-      RentalityUtils: await utils.getAddress(),
       RentalityQuery: await query.getAddress(),
+      RentalityTripsQuery: await tripsQuery.getAddress(),
     },
   })
 
@@ -511,6 +547,7 @@ async function deployDefaultFixture() {
     await deliveryService.getAddress(),
     await rentalityView.getAddress(),
     await insuranceService.getAddress(),
+    await refferalProgram.getAddress(),
   ])
   await rentalityAdminGateway.waitForDeployment()
 
@@ -553,9 +590,9 @@ async function deployDefaultFixture() {
 
   const hostSignature = await signTCMessage(host)
   const guestSignature = await signTCMessage(guest)
-  const adminKyc = signKycInfo(await rentalityLocationVerifier.getAddress(), admin)
-  await rentalityGateway.connect(host).setKYCInfo(' ', ' ', ' ', hostSignature)
-  await rentalityGateway.connect(guest).setKYCInfo(' ', ' ', ' ', guestSignature)
+  const adminKyc = signKycInfo(await rentalityLocationVerifier.getAddress(), admin, zeroHash)
+  await rentalityGateway.connect(host).setKYCInfo(' ', ' ', ' ', hostSignature, zeroHash)
+  await rentalityGateway.connect(guest).setKYCInfo(' ', ' ', ' ', guestSignature, zeroHash)
 
   await rentalityCurrencyConverter.addCurrencyType(
     await usdtContract.getAddress(),
@@ -602,6 +639,8 @@ async function deployDefaultFixture() {
     hostSignature,
     mockRequestWithInsurance,
     insuranceService,
+    refferalProgram,
+    hashCreator,
   }
 }
 
@@ -626,4 +665,6 @@ module.exports = {
   emptyKyc,
   InsuranceType,
   UserRole,
+  zeroHash,
+  RefferalProgram,
 }

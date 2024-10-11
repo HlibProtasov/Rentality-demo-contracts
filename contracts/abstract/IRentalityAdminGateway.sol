@@ -76,10 +76,6 @@ interface IRentalityAdminGateway {
   /// @param newGeoServiceAddress The new address of the GeoService contract.
   function updateGeoServiceAddress(address newGeoServiceAddress) external;
 
-  /// @notice Updates the address of the GeoParser contract.
-  /// @param newGeoParserAddress The new address of the GeoParser contract.
-  function updateGeoParserAddress(address newGeoParserAddress) external;
-
   /// @dev Sets the waiting time, only callable by administrators.
   /// @param timeInSec, set old value to this
   function setClaimsWaitingTime(uint timeInSec) external;
@@ -108,5 +104,5 @@ interface IRentalityAdminGateway {
   /// @notice Sets a new message for the Terms and Conditions (TC) and updates the corresponding hashed message.
   /// @dev This function can only be called by an admin.
   /// @param message The new message for the TC.
-  function setNewTCMessage(string memory message) external;
+  // function setNewTCMessage(string memory message) external;
 }

@@ -1,41 +1,45 @@
 const { expect } = require('chai')
 const { loadFixture } = require('@nomicfoundation/hardhat-network-helpers')
 
-const { getMockCarRequest, getEmptySearchCarParams } = require('../utils')
+const { getMockCarRequest, zeroHash } = require('../utils')
 const { deployFixtureWith1Car, deployDefaultFixture } = require('./deployments')
 
 describe('RentalityCarToken: host functions', function () {
   it('Adding car should emit CarAddedSuccess event', async function () {
-    const { rentalityCarToken, host, rentalityLocationVerifier, admin } = await loadFixture(deployDefaultFixture)
+    const { rentalityCarToken, host, rentalityLocationVerifier, admin, rentalityGateway } =
+      await loadFixture(deployDefaultFixture)
 
     const request = getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin)
 
-    await expect(rentalityCarToken.connect(host).addCar(request))
+    await expect(rentalityGateway.connect(host).addCar(request, zeroHash))
       .to.emit(rentalityCarToken, 'CarAddedSuccess')
       .withArgs(1, request.carVinNumber, host.address, request.pricePerDayInUsdCents, true)
   })
 
   it('Adding car with the same VIN number should be reverted', async function () {
-    const { rentalityCarToken, host, rentalityLocationVerifier, admin } = await loadFixture(deployDefaultFixture)
+    const { rentalityCarToken, host, rentalityLocationVerifier, admin, rentalityGateway } =
+      await loadFixture(deployDefaultFixture)
 
     const request1 = getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin)
     const request2 = {
       ...getMockCarRequest(1, await rentalityLocationVerifier.getAddress(), admin),
+      zeroHash,
       carVinNumber: request1.carVinNumber,
     }
 
-    await expect(rentalityCarToken.connect(host).addCar(request1)).not.be.reverted
-    await expect(rentalityCarToken.connect(host).addCar(request2)).to.be.reverted
+    await expect(rentalityGateway.connect(host).addCar(request1, zeroHash)).not.be.reverted
+    await expect(rentalityGateway.connect(host).addCar(request2, zeroHash)).to.be.reverted
   })
 
   it('Adding car with the different VIN number should not be reverted', async function () {
-    const { rentalityCarToken, host, rentalityLocationVerifier, admin } = await loadFixture(deployDefaultFixture)
+    const { rentalityCarToken, host, rentalityLocationVerifier, admin, rentalityGateway } =
+      await loadFixture(deployDefaultFixture)
 
     const request1 = getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin)
     const request2 = getMockCarRequest(1, await rentalityLocationVerifier.getAddress(), admin)
 
-    await expect(rentalityCarToken.connect(host).addCar(request1)).not.be.reverted
-    await expect(rentalityCarToken.connect(host).addCar(request2)).not.be.reverted
+    await expect(rentalityGateway.connect(host).addCar(request1, zeroHash)).not.be.reverted
+    await expect(rentalityGateway.connect(host).addCar(request2, zeroHash)).not.be.reverted
   })
 
   it('Only owner of the car can burn token', async function () {
@@ -51,7 +55,8 @@ describe('RentalityCarToken: host functions', function () {
   })
 
   it('getCarInfoById should return valid info', async function () {
-    const { rentalityCarToken, host, rentalityLocationVerifier, admin } = await loadFixture(deployFixtureWith1Car)
+    const { rentalityCarToken, host, rentalityLocationVerifier, admin, rentalityGateway } =
+      await loadFixture(deployFixtureWith1Car)
 
     const TOKEN_ID = 1
     const request = getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin)
@@ -90,7 +95,8 @@ describe('RentalityCarToken: host functions', function () {
   })
 
   it('getCarsOwnedByUser with 1 car should return valid info', async function () {
-    const { rentalityCarToken, host, rentalityLocationVerifier, admin } = await loadFixture(deployFixtureWith1Car)
+    const { rentalityCarToken, host, rentalityLocationVerifier, admin, rentalityGateway } =
+      await loadFixture(deployFixtureWith1Car)
 
     const request = getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin)
 

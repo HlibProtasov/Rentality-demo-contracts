@@ -12,6 +12,8 @@ import '../payments/RentalityPaymentService.sol';
 import '../payments/RentalityInsurance.sol';
 import {RentalityContract} from '../RentalityGateway.sol';
 import {RentalityCarDelivery} from '../features/RentalityCarDelivery.sol';
+import {RentalityReferralProgram} from '../features/refferalProgram/RentalityReferralProgram.sol';
+
 /// @title RentalityUtils Library
 /// @notice
 /// This library provides utility functions for handling coordinates, string manipulation,
@@ -202,7 +204,7 @@ library RentalityUtils {
     return chatInfoList;
   }
 
-/// not using
+  /// not using
   /// @notice Parses a response string containing geolocation data.
   /// @param response The response string to parse.
   /// @return result Parsed geolocation data in RentalityGeoService.ParsedGeolocationData structure.
@@ -624,5 +626,31 @@ library RentalityUtils {
     if (pickUp > 0) addresses.carService.verifySignedLocationInfo(request.pickUpInfo);
     if (dropOf > 0) addresses.carService.verifySignedLocationInfo(request.returnInfo);
     return (pickUp, dropOf);
+  }
+  function verifyClaim(
+    RentalityContract memory addresses,
+    Schemas.CreateClaimRequest memory request
+  ) public view returns (address, address) {
+    Schemas.Trip memory trip = addresses.tripService.getTrip(request.tripId);
+
+    require(
+      (trip.host == tx.origin && uint8(request.claimType) <= 7) ||
+        (trip.guest == tx.origin && ((uint8(request.claimType) <= 9) && (uint8(request.claimType) >= 3))),
+      'Only for trip host or guest, or wrong claim type.'
+    );
+
+    require(
+      trip.status != Schemas.TripStatus.Canceled && trip.status != Schemas.TripStatus.Created,
+      'Wrong trip status.'
+    );
+    return (trip.host, trip.guest);
+  }
+
+  function verifyConfirmCheckOut(RentalityContract memory contracts, uint tripId) public view {
+    Schemas.Trip memory trip = contracts.tripService.getTrip(tripId);
+
+    require(trip.guest == tx.origin || contracts.userService.isAdmin(tx.origin), 'For trip guest or admin');
+    require(trip.host == trip.tripFinishedBy, 'No needs to confirm.');
+    require(trip.status == Schemas.TripStatus.CheckedOutByHost, 'The trip is not in status CheckedOutByHost');
   }
 }

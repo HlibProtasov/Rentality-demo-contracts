@@ -56,6 +56,10 @@ async function main() {
     getContractAddress('RentalityView', 'scripts/deploy_4b_RentalityView.js', chainId),
     'RentalityView'
   )
+  const rentalityReferralService = checkNotNull(
+    getContractAddress('RentalityReferralProgram', 'scripts/deploy_3e_RentalityReferralProgram.js', chainId),
+    'RentalityReferralProgram'
+  )
   const rentalityInsurance = checkNotNull(
     getContractAddress('RentalityInsurance', 'scripts/deploy_3d_RentalityInsurance.js', chainId),
     'RentalityInsurance'
@@ -78,6 +82,7 @@ async function main() {
     rentalityCarDelivery,
     rentalityView,
     rentalityInsurance,
+    rentalityReferralService,
   ])
   await contract.waitForDeployment()
   const contractAddress = await contract.getAddress()
