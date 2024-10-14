@@ -101,6 +101,7 @@ interface Schemas {
     uint64 startDateTime;
     uint64 endDateTime;
     address currencyType;
+    // bool useRefferalDiscount;
   }
 
   struct CreateTripRequestWithDelivery {
@@ -110,6 +111,7 @@ interface Schemas {
     address currencyType;
     SignedLocationInfo pickUpInfo;
     SignedLocationInfo returnInfo;
+    // bool useRefferalDiscount;
   }
 
   /// @dev Enumeration representing verious states of a trip.
@@ -616,5 +618,89 @@ interface Schemas {
   struct CarInfoWithInsurance {
     CarInfo carInfo;
     InsuranceCarInfo insuranceInfo;
+  }
+  enum RefferalProgram {
+    SetKYC,
+    PassCivic,
+    AddFirstCar,
+    AddCar,
+    CreateTrip,
+    FinishTripAsHost,
+    FinishTripAsGuest,
+    UnlistedCar,
+    Daily,
+    DailyListing
+  }
+
+  enum Tear {
+    Tear1,
+    Tear2,
+    Tear3,
+    Tear4
+  }
+  enum RefferalAccrualType {
+    OneTime,
+    Permanent
+  }
+
+  struct ReadyToClaim {
+    uint points;
+    RefferalProgram refType;
+    bool oneTime;
+  }
+  struct ReadyToClaimRefferalHash {
+    uint points;
+    RefferalProgram refType;
+    bool oneTime;
+    bool claimed;
+  }
+  struct TearPoints {
+    uint from;
+    uint to;
+  }
+
+  struct RefferalDiscount {
+    uint pointsCosts;
+    uint percents;
+  }
+
+  struct TearDTO {
+    TearPoints points;
+    Tear tear;
+  }
+
+  struct ReadyToClaimDTO {
+    ReadyToClaim[] toClaim;
+    uint totalPoints;
+    uint toNextDailyClaim;
+  }
+  struct RefferalHashDTO {
+    ReadyToClaimRefferalHash[] toClaim;
+    uint totalPoints;
+    bytes32 hash;
+  }
+
+  /// admin panel ref program info
+  struct RefferalProgramInfoDTO {
+    RefferalAccrualType refferalType;
+    RefferalProgram method;
+    int points;
+  }
+
+  struct HashPointsDTO {
+    RefferalProgram method;
+    uint points;
+  }
+  struct RefferalDiscountsDTO {
+    RefferalProgram method;
+    Tear tear;
+    RefferalDiscount discount;
+  }
+
+  struct AllRefferalInfoDTO {
+    RefferalProgramInfoDTO[] programPoints;
+    HashPointsDTO[] hashPoints;
+    RefferalDiscountsDTO[] discounts;
+    TearDTO[] tear;
   }
 }
