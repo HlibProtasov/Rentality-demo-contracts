@@ -3,9 +3,11 @@ const {
   deployDefaultFixture,
   getMockCarRequest,
   createMockClaimRequest,
-  zeroHash,
   emptyLocationInfo,
+  emptySignedLocationInfo,
+  zeroHash
 } = require('../utils')
+
 const { expect } = require('chai')
 const { calculatePaymentsFrom } = require('../utils')
 
@@ -62,21 +64,15 @@ describe('ERC20 payments', function () {
     await usdtContract.connect(guest).approve(await rentalityPaymentService.getAddress(), rentPrice)
 
     await expect(
-      rentalityGateway.connect(guest).createTripRequest({
+      rentalityGateway.connect(guest).createTripRequestWithDelivery({
         carId: 1,
         startDateTime: 1,
         endDateTime: 2,
         currencyType: usdt,
         insurancePaid: false,
         photo: '',
-        pickUpInfo: {
-          signature: guest.address,
-          locationInfo: emptyLocationInfo,
-        },
-        returnInfo: {
-          signature: guest.address,
-          locationInfo: emptyLocationInfo,
-        },
+        pickUpInfo: emptySignedLocationInfo,
+        returnInfo: emptySignedLocationInfo,
       })
     ).to.not.reverted
 
@@ -108,21 +104,15 @@ describe('ERC20 payments', function () {
     await usdtContract.connect(guest).approve(await rentalityPaymentService.getAddress(), rentPrice)
 
     await expect(
-      rentalityGateway.connect(guest).createTripRequest({
+      rentalityGateway.connect(guest).createTripRequestWithDelivery({
         carId: 1,
         startDateTime: 1,
         endDateTime: 2,
         currencyType: usdt,
         insurancePaid: false,
         photo: '',
-        pickUpInfo: {
-          signature: guest.address,
-          locationInfo: emptyLocationInfo,
-        },
-        returnInfo: {
-          signature: guest.address,
-          locationInfo: emptyLocationInfo,
-        },
+        pickUpInfo: emptySignedLocationInfo,
+        returnInfo: emptySignedLocationInfo,
       })
     ).to.not.reverted
 
@@ -175,7 +165,7 @@ describe('ERC20 payments', function () {
     await usdtContract.connect(guest).approve(await rentalityPaymentService.getAddress(), rentPrice)
 
     await expect(
-      rentalityGateway.connect(guest).createTripRequest({
+      rentalityGateway.connect(guest).createTripRequestWithDelivery({
         carId: 1,
         host: host.address,
         startDateTime: 1,
@@ -189,14 +179,8 @@ describe('ERC20 payments', function () {
         currencyType: await rentalityPlatform.getAddress(),
         insurancePaid: false,
         photo: '',
-        pickUpInfo: {
-          signature: guest.address,
-          locationInfo: emptyLocationInfo,
-        },
-        returnInfo: {
-          signature: guest.address,
-          locationInfo: emptyLocationInfo,
-        },
+        pickUpInfo: emptySignedLocationInfo,
+        returnInfo: emptySignedLocationInfo,
       })
     ).to.be.revertedWith('Token is not available.')
   })
@@ -225,7 +209,7 @@ describe('ERC20 payments', function () {
     await usdtContract.connect(guest).approve(await rentalityPaymentService.getAddress(), rentPrice)
 
     await expect(
-      rentalityGateway.connect(guest).createTripRequest({
+      rentalityGateway.connect(guest).createTripRequestWithDelivery({
         carId: 1,
         host: host.address,
         startDateTime: 1,
@@ -239,14 +223,8 @@ describe('ERC20 payments', function () {
         currencyType: usdt,
         insurancePaid: false,
         photo: '',
-        pickUpInfo: {
-          signature: guest.address,
-          locationInfo: emptyLocationInfo,
-        },
-        returnInfo: {
-          signature: guest.address,
-          locationInfo: emptyLocationInfo,
-        },
+        pickUpInfo: emptySignedLocationInfo,
+        returnInfo: emptySignedLocationInfo,
       })
     ).to.not.reverted
 
@@ -294,21 +272,15 @@ describe('ERC20 payments', function () {
     await usdtContract.connect(guest).approve(await rentalityPaymentService.getAddress(), rentPrice)
 
     await expect(
-      rentalityGateway.connect(guest).createTripRequest({
+      rentalityGateway.connect(guest).createTripRequestWithDelivery({
         carId: 1,
         startDateTime: 1,
         endDateTime: 2,
         currencyType: usdt,
         insurancePaid: false,
         photo: '',
-        pickUpInfo: {
-          signature: guest.address,
-          locationInfo: emptyLocationInfo,
-        },
-        returnInfo: {
-          signature: guest.address,
-          locationInfo: emptyLocationInfo,
-        },
+        pickUpInfo: emptySignedLocationInfo,
+        returnInfo: emptySignedLocationInfo,
       })
     ).to.not.reverted
 

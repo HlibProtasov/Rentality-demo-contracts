@@ -240,10 +240,6 @@ interface IRentalityGateway {
 
   /// @notice Create a trip request.
   /// @param request The request parameters for creating a new trip.
-  function createTripRequest(Schemas.CreateTripRequest memory request) external payable;
-
-  /// @notice Create a trip request.
-  /// @param request The request parameters for creating a new trip.
   function createTripRequestWithDelivery(Schemas.CreateTripRequestWithDelivery memory request) external payable;
 
   /// @notice Performs check-in by the guest for a trip.

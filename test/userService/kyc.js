@@ -11,6 +11,7 @@ const {
   UserRole,
   zeroHash,
   emptyLocationInfo,
+  emptySignedLocationInfo,
 } = require('../utils')
 const { deployFixtureWithUsers, deployDefaultFixture } = require('./deployments')
 
@@ -166,12 +167,14 @@ describe('RentalityUserService: KYC management', function () {
     await rentalityGateway.connect(guest).setKYCInfo('name', 'phoneNumberGuest', 'surname', guestSignature, zeroHash)
     await rentalityGateway.connect(host).setKYCInfo('name', 'phoneNumberHost', 'surname', hostSignature, zeroHash)
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: rentPriceInEth }
       )

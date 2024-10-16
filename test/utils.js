@@ -35,6 +35,10 @@ const emptyLocationInfo = {
   longitude: '',
   timeZoneId: '',
 }
+const emptySignedLocationInfo = {
+  signature: '0x',
+  locationInfo: emptyLocationInfo,
+}
 
 const PaymentStatus = {
   Any: 0,
@@ -667,4 +671,5 @@ module.exports = {
   UserRole,
   zeroHash,
   RefferalProgram,
+  emptySignedLocationInfo,
 }

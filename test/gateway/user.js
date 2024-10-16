@@ -14,6 +14,7 @@ const {
   signKycInfo,
   emptyLocationInfo,
   UserRole,
+  emptySignedLocationInfo,
 } = require('../utils')
 
 describe('RentalityGateway: user info', function () {
@@ -135,13 +136,14 @@ describe('RentalityGateway: user info', function () {
       .connect(guest)
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
-          useRefferalDiscount: false,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -190,13 +192,14 @@ describe('RentalityGateway: user info', function () {
       .connect(guest)
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
-          useRefferalDiscount: false,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -244,13 +247,14 @@ describe('RentalityGateway: user info', function () {
       .connect(guest)
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
-          useRefferalDiscount: false,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )

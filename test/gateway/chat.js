@@ -11,6 +11,7 @@ const {
   emptyKyc,
   getEmptySearchCarParams,
   emptyLocationInfo,
+  emptySignedLocationInfo,
 } = require('../utils')
 
 describe('RentalityGateway: chat', function () {
@@ -90,13 +91,14 @@ describe('RentalityGateway: chat', function () {
       emptyLocationInfo
     )
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
           endDateTime: Date.now() + oneDayInSeconds * 2,
           currencyType: ethToken,
-          useRefferalDiscount: false,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -174,13 +176,14 @@ describe('RentalityGateway: chat', function () {
       .connect(guest)
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
           endDateTime: Date.now() + oneDayInSeconds,
           currencyType: ethToken,
-          useRefferalDiscount: false,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )

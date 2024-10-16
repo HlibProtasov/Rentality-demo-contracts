@@ -8,6 +8,7 @@ const {
   calculatePayments,
   emptyLocationInfo,
   getEmptySearchCarParams,
+  emptySignedLocationInfo,
   zeroHash,
 } = require('../utils')
 const { loadFixture } = require('@nomicfoundation/hardhat-network-helpers')
@@ -70,22 +71,16 @@ describe('Rentality History Service', function () {
       .connect(guest)
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
     await expect(
-      await rentalityPlatform.connect(guest).createTripRequest(
+      await rentalityPlatform.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
           endDateTime: Date.now() + oneDayInSeconds,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
           insurancePaid: false,
           photo: '',
-          pickUpInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
-          returnInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
         },
         { value: result.totalPrice }
       )
@@ -129,22 +124,16 @@ describe('Rentality History Service', function () {
       request.securityDepositPerTripInUsdCents
     )
     await expect(
-      await rentalityPlatform.connect(guest).createTripRequest(
+      await rentalityPlatform.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
           endDateTime: Date.now() + oneDayInSeconds,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
           insurancePaid: false,
           photo: '',
-          pickUpInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
-          returnInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
         },
         { value: rentPriceInEth }
       )
@@ -219,22 +208,15 @@ describe('Rentality History Service', function () {
 
     const payments = await rentalityGateway.calculatePayments(1, 7, ethToken)
     await expect(
-      await rentalityPlatform.connect(guest).createTripRequest(
+      await rentalityPlatform.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
           endDateTime: Date.now() + sevenDays,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
           insurancePaid: false,
-          photo: '',
-          pickUpInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
-          returnInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
         },
         { value: payments.totalPrice }
       )

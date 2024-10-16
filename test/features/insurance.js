@@ -10,6 +10,7 @@ const {
   emptyLocationInfo,
   InsuranceType,
   zeroHash,
+  emptySignedLocationInfo,
 } = require('../utils')
 const { loadFixture } = require('@nomicfoundation/hardhat-network-helpers')
 const { ethers } = require('hardhat')
@@ -77,12 +78,14 @@ describe('Rentality insurance', function () {
       .connect(guest)
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -97,7 +100,7 @@ describe('Rentality insurance', function () {
         .connect(guest)
         .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
       await expect(
-        await rentalityGateway.connect(guest).createTripRequest(
+        await rentalityGateway.connect(guest).createTripRequestWithDelivery(
           {
             carId: 1,
             startDateTime: 123,
@@ -105,14 +108,8 @@ describe('Rentality insurance', function () {
             currencyType: ethToken,
             insurancePaid: true,
             photo: '',
-            pickUpInfo: {
-              signature: guest.address,
-              locationInfo: emptyLocationInfo,
-            },
-            returnInfo: {
-              signature: guest.address,
-              locationInfo: emptyLocationInfo,
-            },
+            pickUpInfo: emptySignedLocationInfo,
+            returnInfo: emptySignedLocationInfo,
           },
           { value: result.totalPrice }
         )
@@ -136,7 +133,7 @@ describe('Rentality insurance', function () {
       emptyLocationInfo
     )
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 1,
@@ -144,14 +141,8 @@ describe('Rentality insurance', function () {
           currencyType: ethToken,
           insurancePaid: true,
           photo: '',
-          pickUpInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
-          returnInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -171,7 +162,7 @@ describe('Rentality insurance', function () {
       .connect(guest)
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
@@ -179,14 +170,8 @@ describe('Rentality insurance', function () {
           currencyType: ethToken,
           insurancePaid: true,
           photo: '',
-          pickUpInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
-          returnInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -276,24 +261,28 @@ describe('Rentality insurance', function () {
     expect(result1 < result2).to.be.eq(true)
 
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result2.totalPrice }
       )
     ).to.not.reverted
 
     await expect(
-      rentalityGateway.connect(guest).createTripRequest(
+      rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result1.totalPrice }
       )
@@ -309,12 +298,14 @@ describe('Rentality insurance', function () {
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
 
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -343,12 +334,14 @@ describe('Rentality insurance', function () {
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
 
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -387,12 +380,14 @@ describe('Rentality insurance', function () {
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
 
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -422,12 +417,14 @@ describe('Rentality insurance', function () {
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
 
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -457,12 +454,14 @@ describe('Rentality insurance', function () {
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
 
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -502,12 +501,14 @@ describe('Rentality insurance', function () {
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
 
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -535,12 +536,14 @@ describe('Rentality insurance', function () {
     expect(insurances[1].createdByHost).to.be.eq(true)
 
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -585,12 +588,14 @@ describe('Rentality insurance', function () {
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
 
     await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
+      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: 123,
           endDateTime: 321,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
