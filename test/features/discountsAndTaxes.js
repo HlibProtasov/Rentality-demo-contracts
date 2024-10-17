@@ -32,7 +32,8 @@ describe('Rentality taxes & discounts', function () {
     host,
     guest,
     anonymous,
-    rentalityLocationVerifier
+    rentalityLocationVerifier,
+    rentalityView
 
   beforeEach(async function () {
     ;({
@@ -56,6 +57,7 @@ describe('Rentality taxes & discounts', function () {
       guest,
       anonymous,
       rentalityLocationVerifier,
+      rentalityView
     } = await loadFixture(deployDefaultFixture))
   })
 
@@ -97,7 +99,7 @@ describe('Rentality taxes & discounts', function () {
   })
   it('guest payed correct value with taxes, without discount', async function () {
     const request = getMockCarRequest(10, await rentalityLocationVerifier.getAddress(), admin)
-    await expect(rentalityGateway.connect(host).addCar(request, zeroHash)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).addCar(request, zeroHash)).not.to.be.reverted
     const myCars = await rentalityCarToken.connect(host).getCarsOwnedByUser(host.address)
     expect(myCars.length).to.equal(1)
 
@@ -108,7 +110,7 @@ describe('Rentality taxes & discounts', function () {
 
     let twoDaysInSec = 172800
 
-    const result = await rentalityGateway.calculatePaymentsWithDelivery(
+    const result = await rentalityView.calculatePaymentsWithDelivery(
       1,
       dayInTrip,
       ethToken,
@@ -133,7 +135,7 @@ describe('Rentality taxes & discounts', function () {
 
   it('guest payed correct value with taxes and 3 days discount', async function () {
     const request = getMockCarRequest(10, await rentalityLocationVerifier.getAddress(), admin)
-    await expect(rentalityGateway.connect(host).addCar(request, zeroHash)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).addCar(request, zeroHash)).not.to.be.reverted
     const myCars = await rentalityCarToken.connect(host).getCarsOwnedByUser(host.address)
     expect(myCars.length).to.equal(1)
 
@@ -143,7 +145,7 @@ describe('Rentality taxes & discounts', function () {
     let dayInTrip = 4
 
     let fourDaysInSec = 345600
-    const result = await rentalityGateway.calculatePaymentsWithDelivery(
+    const result = await rentalityView.calculatePaymentsWithDelivery(
       1,
       dayInTrip,
       ethToken,
@@ -167,7 +169,7 @@ describe('Rentality taxes & discounts', function () {
   })
   it('guest payed correct value with taxes and 7 days discount', async function () {
     const request = getMockCarRequest(10, await rentalityLocationVerifier.getAddress(), admin)
-    await expect(rentalityGateway.connect(host).addCar(request, zeroHash)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).addCar(request, zeroHash)).not.to.be.reverted
     const myCars = await rentalityCarToken.connect(host).getCarsOwnedByUser(host.address)
     expect(myCars.length).to.equal(1)
 
@@ -177,7 +179,7 @@ describe('Rentality taxes & discounts', function () {
     let dayInTrip = 8
     let eightDaysInSec = 691200
 
-    const result = await rentalityGateway.calculatePaymentsWithDelivery(
+    const result = await rentalityView.calculatePaymentsWithDelivery(
       1,
       dayInTrip,
       ethToken,
@@ -202,7 +204,7 @@ describe('Rentality taxes & discounts', function () {
 
   it('guest payed correct value with taxes and 30 days discount', async function () {
     const request = getMockCarRequest(10, await rentalityLocationVerifier.getAddress(), admin)
-    await expect(rentalityGateway.connect(host).addCar(request, zeroHash)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).addCar(request, zeroHash)).not.to.be.reverted
     const myCars = await rentalityCarToken.connect(host).getCarsOwnedByUser(host.address)
     expect(myCars.length).to.equal(1)
 
@@ -213,7 +215,7 @@ describe('Rentality taxes & discounts', function () {
 
     let thirtyOneDayInSec = 86400 * 31
 
-    const result = await rentalityGateway.calculatePaymentsWithDelivery(
+    const result = await rentalityView.calculatePaymentsWithDelivery(
       1,
       dayInTrip,
       ethToken,
@@ -237,7 +239,7 @@ describe('Rentality taxes & discounts', function () {
   })
   it('after trip host get correct value', async function () {
     const request = getMockCarRequest(91, await rentalityLocationVerifier.getAddress(), admin)
-    await expect(rentalityGateway.connect(host).addCar(request, zeroHash)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).addCar(request, zeroHash)).not.to.be.reverted
     const myCars = await rentalityCarToken.connect(host).getCarsOwnedByUser(host.address)
     expect(myCars.length).to.equal(1)
 
@@ -256,7 +258,7 @@ describe('Rentality taxes & discounts', function () {
     )
 
     let thirtyOneDayInSec = 86400 * 31
-    const result = await rentalityGateway.calculatePaymentsWithDelivery(
+    const result = await rentalityView.calculatePaymentsWithDelivery(
       1,
       31,
       ethToken,
@@ -279,11 +281,11 @@ describe('Rentality taxes & discounts', function () {
       )
     ).to.changeEtherBalances([guest, rentalityPaymentService], [-value, value])
 
-    await expect(rentalityGateway.connect(host).approveTripRequest(1)).not.to.be.reverted
-    await expect(rentalityGateway.connect(host).checkInByHost(1, [0, 0], '', '')).not.to.be.reverted
-    await expect(rentalityGateway.connect(guest).checkInByGuest(1, [0, 0])).not.to.be.reverted
-    await expect(rentalityGateway.connect(guest).checkOutByGuest(1, [0, 0], zeroHash)).not.to.be.reverted
-    await expect(rentalityGateway.connect(host).checkOutByHost(1, [0, 0])).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).approveTripRequest(1)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).checkInByHost(1, [0, 0], '', '')).not.to.be.reverted
+    await expect(rentalityPlatform.connect(guest).checkInByGuest(1, [0, 0])).not.to.be.reverted
+    await expect(rentalityPlatform.connect(guest).checkOutByGuest(1, [0, 0], zeroHash)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).checkOutByHost(1, [0, 0])).not.to.be.reverted
 
     const [deposit, ,] = await rentalityCurrencyConverter.getFromUsdLatest(
       ethToken,
@@ -292,7 +294,7 @@ describe('Rentality taxes & discounts', function () {
 
     const returnToHost = value - deposit - rentalityFee - taxes
 
-    await expect(rentalityGateway.connect(host).finishTrip(1, zeroHash)).to.changeEtherBalances(
+    await expect(rentalityPlatform.connect(host).finishTrip(1, zeroHash)).to.changeEtherBalances(
       [host, rentalityPaymentService],
       [returnToHost, -(result.totalPrice - rentalityFee - taxes)]
     )
@@ -300,7 +302,7 @@ describe('Rentality taxes & discounts', function () {
 
   it('Should return user discount, if it exists', async function () {
     await expect(
-      rentalityGateway
+      rentalityPlatform
         .connect(host)
         .addCar(getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin), zeroHash)
     ).not.to.be.reverted
@@ -317,7 +319,7 @@ describe('Rentality taxes & discounts', function () {
       initialized: true,
     }
 
-    await expect(await rentalityGateway.connect(owner).addUserDiscount(data)).to.not.reverted
+    await expect(await rentalityPlatform.connect(owner).addUserDiscount(data)).to.not.reverted
 
     let first = await rentalityPaymentService.connect(owner).calculateSumWithDiscount(owner.address, 3, 1000)
     expect(first).to.be.eq(1000 * 3 - (1000 * 3 * 10) / 100)
@@ -329,7 +331,7 @@ describe('Rentality taxes & discounts', function () {
 
   it('Calculate payments should return correct calculation', async function () {
     const request = getMockCarRequest(10, await rentalityLocationVerifier.getAddress(), admin)
-    await expect(rentalityGateway.connect(host).addCar(request, zeroHash)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).addCar(request, zeroHash)).not.to.be.reverted
 
     const tripDays = 7
 
@@ -341,7 +343,7 @@ describe('Rentality taxes & discounts', function () {
       request.securityDepositPerTripInUsdCents
     )
 
-    const contractResult = await rentalityGateway.calculatePaymentsWithDelivery(
+    const contractResult = await rentalityView.calculatePaymentsWithDelivery(
       1,
       tripDays,
       '0x0000000000000000000000000000000000000000',
@@ -353,7 +355,7 @@ describe('Rentality taxes & discounts', function () {
 
   it('Calculate payments: can create trip request with calculated sum', async function () {
     const request = getMockCarRequest(10, await rentalityLocationVerifier.getAddress(), admin)
-    await expect(rentalityGateway.connect(host).addCar(request, zeroHash)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).addCar(request, zeroHash)).not.to.be.reverted
 
     const tripDays = 31
     const oneDayInSeconds = 86400
@@ -366,7 +368,7 @@ describe('Rentality taxes & discounts', function () {
       request.securityDepositPerTripInUsdCents
     )
 
-    const contractResult = await rentalityGateway.calculatePaymentsWithDelivery(
+    const contractResult = await rentalityView.calculatePaymentsWithDelivery(
       1,
       tripDays,
       '0x0000000000000000000000000000000000000000',

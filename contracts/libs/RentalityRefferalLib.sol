@@ -65,8 +65,8 @@ library RentalityRefferalLib {
   }
 
   function updateDaily(int, bytes memory data) public returns (int) {
-    address refferalService = abi.decode(data, (address));
-    return int(RentalityReferralProgram(refferalService).updateDaily());
+    (address refferalService,address user) = abi.decode(data, (address, address));
+    return int(RentalityReferralProgram(refferalService).updateDaily(user));
   }
 
   function formatReadyToClaim(

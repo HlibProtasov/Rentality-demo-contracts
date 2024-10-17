@@ -29,7 +29,7 @@ describe('RentalityCarToken: search functions', function () {
       userLocation: locationInfo,
     }
 
-    const availableCars = await rentalityGateway
+    const availableCars = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams, emptyLocationInfo, emptyLocationInfo)
 
@@ -37,7 +37,7 @@ describe('RentalityCarToken: search functions', function () {
   })
 
   it('Search with brand should work', async function () {
-    const { rentalityCarToken, rentalityTripService, guest, rentalityGateway, rentalityLocationVerifier, admin } =
+    const { rentalityView, rentalityPlatform, guest, rentalityGateway, rentalityLocationVerifier, admin } =
       await loadFixture(deployFixtureWith1Car)
 
     const request = getMockCarRequest(0, rentalityLocationVerifier, admin)
@@ -66,13 +66,13 @@ describe('RentalityCarToken: search functions', function () {
       userLocation: locationInfo,
     }
 
-    const availableCars1 = await rentalityGateway
+    const availableCars1 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams1, emptyLocationInfo, emptyLocationInfo)
 
     expect(availableCars1.length).to.equal(1)
 
-    const availableCars2 = await rentalityGateway
+    const availableCars2 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams2, emptyLocationInfo, emptyLocationInfo)
 
@@ -80,7 +80,7 @@ describe('RentalityCarToken: search functions', function () {
   })
 
   it('Search with model should work', async function () {
-    const { rentalityCarToken, rentalityTripService, guest, rentalityGateway, rentalityLocationVerifier, admin } =
+    const {rentalityView, rentalityPlatform, guest, rentalityGateway, rentalityLocationVerifier, admin } =
       await loadFixture(deployFixtureWith1Car)
 
     const request = getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin)
@@ -109,13 +109,13 @@ describe('RentalityCarToken: search functions', function () {
       userLocation: locationInfo,
     }
 
-    const availableCars1 = await rentalityGateway
+    const availableCars1 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams1, emptyLocationInfo, emptyLocationInfo)
 
     expect(availableCars1.length).to.equal(1)
 
-    const availableCars2 = await rentalityGateway
+    const availableCars2 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams2, emptyLocationInfo, emptyLocationInfo)
 
@@ -123,7 +123,7 @@ describe('RentalityCarToken: search functions', function () {
   })
 
   it('Search with yearOfProduction should work', async function () {
-    const { rentalityCarToken, rentalityTripService, guest, rentalityGateway, rentalityLocationVerifier, admin } =
+    const { rentalityView, rentalityPlatform, guest, rentalityGateway, rentalityLocationVerifier, admin } =
       await loadFixture(deployFixtureWith1Car)
 
     const request = getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin)
@@ -152,13 +152,13 @@ describe('RentalityCarToken: search functions', function () {
       userLocation: locationInfo,
     }
 
-    const availableCars1 = await rentalityGateway
+    const availableCars1 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams1, emptyLocationInfo, emptyLocationInfo)
 
     expect(availableCars1.length).to.equal(1)
 
-    const availableCars2 = await rentalityGateway
+    const availableCars2 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams2, emptyLocationInfo, emptyLocationInfo)
 
@@ -208,13 +208,13 @@ describe('RentalityCarToken: search functions', function () {
       userLocation: locationInfo,
     }
 
-    const availableCars1 = await rentalityGateway
+    const availableCars1 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams1, emptyLocationInfo, emptyLocationInfo)
 
     expect(availableCars1.length).to.equal(1)
 
-    const availableCars2 = await rentalityGateway
+    const availableCars2 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams2, emptyLocationInfo, emptyLocationInfo)
 
@@ -223,8 +223,8 @@ describe('RentalityCarToken: search functions', function () {
 
   it('Search with state should work', async function () {
     const {
-      rentalityCarToken,
-      rentalityTripService,
+      rentalityView, 
+      rentalityPlatform,
       guest,
       geoParserMock,
       rentalityGateway,
@@ -270,13 +270,13 @@ describe('RentalityCarToken: search functions', function () {
       userLocation: locationInfo,
     }
 
-    const availableCars1 = await rentalityGateway
+    const availableCars1 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams1, emptyLocationInfo, emptyLocationInfo)
 
     expect(availableCars1.length).to.equal(2)
 
-    const availableCars2 = await rentalityGateway
+    const availableCars2 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams2, emptyLocationInfo, emptyLocationInfo)
 
@@ -285,8 +285,8 @@ describe('RentalityCarToken: search functions', function () {
 
   it('Search with city should work', async function () {
     const {
-      rentalityCarToken,
-      rentalityTripService,
+      rentalityView,
+       rentalityPlatform,
       guest,
       geoParserMock,
       rentalityGateway,
@@ -332,13 +332,13 @@ describe('RentalityCarToken: search functions', function () {
       userLocation: locationInfo,
     }
 
-    const availableCars1 = await rentalityGateway
+    const availableCars1 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams1, emptyLocationInfo, emptyLocationInfo)
 
     expect(availableCars1.length).to.equal(1)
 
-    const availableCars2 = await rentalityGateway
+    const availableCars2 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams2, emptyLocationInfo, emptyLocationInfo)
 
@@ -346,7 +346,7 @@ describe('RentalityCarToken: search functions', function () {
   })
 
   it('Search with pricePerDayInUsdCentsFrom should work', async function () {
-    const { rentalityCarToken, rentalityTripService, guest, rentalityGateway, rentalityLocationVerifier, admin } =
+    const { rentalityView, rentalityPlatform, guest, rentalityGateway, rentalityLocationVerifier, admin } =
       await loadFixture(deployFixtureWith1Car)
 
     const request = getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin)
@@ -387,19 +387,19 @@ describe('RentalityCarToken: search functions', function () {
       userLocation: locationInfo,
     }
 
-    const availableCars1 = await rentalityGateway
+    const availableCars1 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams1, emptyLocationInfo, emptyLocationInfo)
 
     expect(availableCars1.length).to.equal(1)
 
-    const availableCars2 = await rentalityGateway
+    const availableCars2 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams2, emptyLocationInfo, emptyLocationInfo)
 
     expect(availableCars2.length).to.equal(0)
 
-    const availableCars3 = await rentalityGateway
+    const availableCars3 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams3, emptyLocationInfo, emptyLocationInfo)
 
@@ -407,7 +407,7 @@ describe('RentalityCarToken: search functions', function () {
   })
 
   it('Search with pricePerDayInUsdCentsTo should work', async function () {
-    const { rentalityCarToken, rentalityTripService, guest, rentalityGateway, rentalityLocationVerifier, admin } =
+    const { rentalityView, rentalityPlatform, guest, rentalityGateway, rentalityLocationVerifier, admin } =
       await loadFixture(deployFixtureWith1Car)
 
     const request = getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin)
@@ -448,19 +448,19 @@ describe('RentalityCarToken: search functions', function () {
       userLocation: locationInfo,
     }
 
-    const availableCars1 = await rentalityGateway
+    const availableCars1 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams1, emptyLocationInfo, emptyLocationInfo)
 
     expect(availableCars1.length).to.equal(1)
 
-    const availableCars2 = await rentalityGateway
+    const availableCars2 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams2, emptyLocationInfo, emptyLocationInfo)
 
     expect(availableCars2.length).to.equal(1)
 
-    const availableCars3 = await rentalityGateway
+    const availableCars3 = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(0, 0, searchCarParams3, emptyLocationInfo, emptyLocationInfo)
 

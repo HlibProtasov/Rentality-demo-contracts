@@ -15,18 +15,18 @@ contract RentalityInsurance is Initializable, UUPSAccess {
   mapping(uint => Schemas.InsuranceInfo[]) private tripIdToInsuranceInfo;
   RentalityCarToken private carService;
 
-  function saveInsuranceRequired(uint carId, uint priceInUsdCents, bool required) public {
+  function saveInsuranceRequired(address user, uint carId, uint priceInUsdCents, bool required) public {
     require(userService.isManager(msg.sender), 'Only Manager');
-    require(carService.ownerOf(carId) == tx.origin, 'For car owner');
+    require(carService.ownerOf(carId) == user, 'For car owner');
 
     carIdToInsuranceRequired[carId] = Schemas.InsuranceCarInfo(required, priceInUsdCents);
   }
 
-  function saveGuestInsurance(Schemas.SaveInsuranceRequest memory insuranceInfo) public {
+  function saveGuestInsurance(address user, Schemas.SaveInsuranceRequest memory insuranceInfo) public {
     require(userService.isManager(msg.sender), 'Only Manager');
 
     require(insuranceInfo.insuranceType != Schemas.InsuranceType.OneTime, 'Wrong Insurance type');
-    Schemas.InsuranceInfo[] storage insurances = guestToInsuranceInfo[tx.origin];
+    Schemas.InsuranceInfo[] storage insurances = guestToInsuranceInfo[user];
     if (insuranceInfo.insuranceType == Schemas.InsuranceType.None) {
       if (insurances.length > 0) insurances[insurances.length - 1].insuranceType = insuranceInfo.insuranceType;
     }
@@ -38,7 +38,7 @@ contract RentalityInsurance is Initializable, UUPSAccess {
         insuranceInfo.comment,
         insuranceInfo.insuranceType,
         block.timestamp,
-        tx.origin
+        user
       )
     );
   }
@@ -47,7 +47,7 @@ contract RentalityInsurance is Initializable, UUPSAccess {
     return guestToInsuranceInfo[user];
   }
 
-  function saveTripInsuranceInfo(uint tripId, Schemas.SaveInsuranceRequest memory insuranceInfo) public {
+  function saveTripInsuranceInfo(address user, uint tripId, Schemas.SaveInsuranceRequest memory insuranceInfo) public {
     require(userService.isManager(msg.sender), 'Only Manager');
     require(insuranceInfo.insuranceType != Schemas.InsuranceType.None, 'Wrong insurance type');
     Schemas.InsuranceInfo[] storage insurances = tripIdToInsuranceInfo[tripId];
@@ -60,7 +60,7 @@ contract RentalityInsurance is Initializable, UUPSAccess {
         insuranceInfo.comment,
         insuranceInfo.insuranceType,
         block.timestamp,
-        tx.origin
+        user
       )
     );
   }
@@ -69,23 +69,23 @@ contract RentalityInsurance is Initializable, UUPSAccess {
     Schemas.InsuranceCarInfo memory info = carIdToInsuranceRequired[carId];
     return info.required ? info.priceInUsdCents : 0;
   }
-  function saveGuestinsurancePayment(uint tripId, uint carId, uint totalSum) public {
+  function saveGuestinsurancePayment(address user, uint tripId, uint carId, uint totalSum) public {
     require(userService.isManager(msg.sender), 'Only Manager');
 
     if (carIdToInsuranceRequired[carId].required) {
-      Schemas.InsuranceInfo[] memory insurances = guestToInsuranceInfo[tx.origin];
+      Schemas.InsuranceInfo[] memory insurances = guestToInsuranceInfo[user];
 
       bool guestHasInsurance = (insurances.length > 0 &&
         insurances[insurances.length - 1].insuranceType == Schemas.InsuranceType.General);
-      if (guestHasInsurance) tripIdToInsuranceInfo[tripId] = guestToInsuranceInfo[tx.origin];
+      if (guestHasInsurance) tripIdToInsuranceInfo[tripId] = guestToInsuranceInfo[user];
 
       tripIdToInsurancePaid[tripId] = totalSum;
     }
   }
 
-  function calculateInsuranceForTrip(uint carId, uint64 startDateTime, uint64 endDateTime) public view returns (uint) {
+  function calculateInsuranceForTrip(address user, uint carId, uint64 startDateTime, uint64 endDateTime) public view returns (uint) {
     uint price = getInsurancePriceByCar(carId);
-    Schemas.InsuranceInfo[] memory insurances = guestToInsuranceInfo[tx.origin];
+    Schemas.InsuranceInfo[] memory insurances = guestToInsuranceInfo[user];
     if (
       price == 0 ||
       (insurances.length > 0 && insurances[insurances.length - 1].insuranceType == Schemas.InsuranceType.General)

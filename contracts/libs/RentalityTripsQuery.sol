@@ -204,11 +204,12 @@ library RentalityTripsQuery {
   /// @return guestPhoneNumber The phone number of the guest on the trip.
   /// @return hostPhoneNumber The phone number of the host on the trip.
   function getTripContactInfo(
+    address user,
     uint256 tripId,
     address tripService,
     address userService
   ) public view returns (string memory guestPhoneNumber, string memory hostPhoneNumber) {
-    require(RentalityUserService(userService).isHostOrGuest(tx.origin), 'User is not a host or guest');
+    require(RentalityUserService(userService).isHostOrGuest(user), 'User is not a host or guest');
 
     Schemas.Trip memory trip = RentalityTripService(tripService).getTrip(tripId);
 
@@ -252,7 +253,7 @@ library RentalityTripsQuery {
 
     for (uint i = 1; i <= tripService.totalTripCount(); i++) {
       if (tripService.getTrip(i).guest == guest) {
-        result[currentIndex] = getTripDTO(contracts, insuranceService, i);
+        result[currentIndex] = getTripDTO(contracts, guest, insuranceService, i);
         currentIndex += 1;
       }
     }
@@ -284,7 +285,7 @@ library RentalityTripsQuery {
 
     for (uint i = 1; i <= tripService.totalTripCount(); i++) {
       if (tripService.getTrip(i).host == host) {
-        result[currentIndex] = getTripDTO(contracts, insuranceService, i);
+        result[currentIndex] = getTripDTO(contracts, host,insuranceService, i);
         currentIndex += 1;
       }
     }
@@ -299,6 +300,7 @@ library RentalityTripsQuery {
   /// @return An instance of TripDTO containing all relevant information about the trip.
   function getTripDTO(
     RentalityContract memory contracts,
+    address user,
     RentalityInsurance insuranceService,
     uint tripId
   ) public view returns (Schemas.TripDTO memory) {
@@ -314,6 +316,7 @@ library RentalityTripsQuery {
     Schemas.LocationInfo memory returnLocation = IRentalityGeoService(carService.getGeoServiceAddress())
       .getLocationInfo(trip.returnHash);
     (string memory guestPhoneNumber, string memory hostPhoneNumber) = getTripContactInfo(
+      user,
       tripId,
       address(tripService),
       address(userService)

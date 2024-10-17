@@ -120,7 +120,7 @@ contract RentalityView is UUPSUpgradeable, Initializable {
   {
     return
       addresses.searchSortedCars(
-        tx.origin,
+        msg.sender,
         startDateTime,
         endDateTime,
         searchParams,
@@ -135,7 +135,7 @@ contract RentalityView is UUPSUpgradeable, Initializable {
   /// @notice Retrieves information about cars owned by the caller.
   /// @return An array of car information owned by the caller.
   function getMyCars() public view returns (Schemas.CarInfoDTO[] memory) {
-    return addresses.getCarsOwnedByUserWithEditability();
+    return addresses.getCarsOwnedByUserWithEditability(msg.sender);
   }
 
   /// @notice Retrieves detailed information about a car.
@@ -149,13 +149,13 @@ contract RentalityView is UUPSUpgradeable, Initializable {
   /// @param tripId The ID of the trip.
   /// @return Trip information.
   function getTrip(uint256 tripId) public view returns (Schemas.TripDTO memory) {
-    return RentalityTripsQuery.getTripDTO(addresses, insuranceService, tripId);
+    return RentalityTripsQuery.getTripDTO(addresses, msg.sender, insuranceService, tripId);
   }
 
   /// @notice Retrieves information about trips where the caller is the guest.
   /// @return An array of trip information.
   function getTripsAs(bool host) public view returns (Schemas.TripDTO[] memory) {
-    return RentalityTripsQuery.getTripsAs(addresses, insuranceService, tx.origin, host);
+    return RentalityTripsQuery.getTripsAs(addresses, insuranceService, msg.sender, host);
   }
 
   /// @notice Retrieves information about trips where the caller is the host.
@@ -176,7 +176,7 @@ contract RentalityView is UUPSUpgradeable, Initializable {
   /// @dev The caller is assumed to be the host of the claims.
   /// @return An array of FullClaimInfo containing information about each claim.
   function getMyClaimsAs(bool host) public view returns (Schemas.FullClaimInfo[] memory) {
-    return addresses.getClaimsBy(host, tx.origin);
+    return addresses.getClaimsBy(host, msg.sender);
   }
 
   ///  @notice Retrieves all claims where the caller is the guest.
@@ -203,7 +203,7 @@ contract RentalityView is UUPSUpgradeable, Initializable {
     uint256 tripId
   ) public view returns (string memory guestPhoneNumber, string memory hostPhoneNumber) {
     return
-      RentalityTripsQuery.getTripContactInfo(tripId, address(addresses.tripService), address(addresses.userService));
+      RentalityTripsQuery.getTripContactInfo(msg.sender, tripId, address(addresses.tripService), address(addresses.userService));
   }
 
   /// @notice Retrieves KYC information for the caller.
@@ -274,6 +274,7 @@ contract RentalityView is UUPSUpgradeable, Initializable {
     return
       RentalityUtils.calculatePaymentsWithDelivery(
         addresses,
+        msg.sender,
         carId,
         daysOfTrip,
         currency,
@@ -332,10 +333,10 @@ contract RentalityView is UUPSUpgradeable, Initializable {
     return addresses.userService.isCommissionPaidForUser(user);
   }
   function getMyFullKYCInfo() public view returns (Schemas.FullKYCInfoDTO memory) {
-    return addresses.userService.getMyFullKYCInfo();
+    return addresses.userService.getMyFullKYCInfo(msg.sender);
   }
   function getInsurancesBy(bool host) public view returns (Schemas.InsuranceDTO[] memory) {
-    return RentalityTripsQuery.getTripInsurancesBy(host, addresses, insuranceService, tx.origin);
+    return RentalityTripsQuery.getTripInsurancesBy(host, addresses, insuranceService, msg.sender);
   }
 
   function calculateClaimValue(uint claimdId) public view returns (uint) {
@@ -343,7 +344,7 @@ contract RentalityView is UUPSUpgradeable, Initializable {
   }
 
   function getMyInsurancesAsGuest() public view returns (Schemas.InsuranceInfo[] memory) {
-    return insuranceService.getMyInsurancesAsGuest(tx.origin);
+    return insuranceService.getMyInsurancesAsGuest(msg.sender);
   }
 
   function initialize(

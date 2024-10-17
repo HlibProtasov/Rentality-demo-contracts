@@ -402,6 +402,7 @@ library RentalityUtils {
   /// @return calculatePaymentsDTO An object containing payment details.
   function calculatePaymentsWithDelivery(
     RentalityContract memory addresses,
+    address user,
     uint carId,
     uint64 daysOfTrip,
     address currency,
@@ -421,7 +422,7 @@ library RentalityUtils {
         ),
         addresses.carService.getCarInfoById(carId).createdBy
       );
-    return calculatePayments(addresses, carId, daysOfTrip, currency, deliveryFee, insuranceService);
+    return calculatePayments(addresses, user ,carId, daysOfTrip, currency, deliveryFee, insuranceService);
   }
   /// @notice Checks if a car is available for a specific user based on search parameters.
   /// @dev Calculates the payments for a trip.
@@ -431,6 +432,7 @@ library RentalityUtils {
   /// @return calculatePaymentsDTO An object containing payment details.
   function calculatePayments(
     RentalityContract memory addresses,
+    address user,
     uint carId,
     uint64 daysOfTrip,
     address currency,
@@ -454,7 +456,7 @@ library RentalityUtils {
     );
     uint totalPrice = car.securityDepositPerTripInUsdCents + salesTaxes + govTax + sumWithDiscount + deliveryFee;
 
-    if (!insuranceService.isGuestHasInsurance(tx.origin)) {
+    if (!insuranceService.isGuestHasInsurance(user)) {
       totalPrice += insuranceService.getInsurancePriceByCar(carId) * daysOfTrip;
     }
 
@@ -468,14 +470,15 @@ library RentalityUtils {
 
   function validateTripRequest(
     RentalityContract memory addresses,
+     address user,
     address currencyType,
     uint carId,
     uint64 startDateTime,
     uint64 endDateTime
   ) public view {
-    require(addresses.userService.hasPassedKYCAndTC(tx.origin), 'KYC or TC not passed.');
+    require(addresses.userService.hasPassedKYCAndTC(user), 'KYC or TC not passed.');
     require(addresses.currencyConverterService.currencyTypeIsAvailable(currencyType), 'Token is not available.');
-    require(addresses.carService.ownerOf(carId) != tx.origin, 'Car is not available for creator');
+    require(addresses.carService.ownerOf(carId) != user, 'Car is not available for creator');
     require(!isCarUnavailable(addresses, carId, startDateTime, endDateTime), 'Unavailable for current date.');
   }
 
@@ -531,6 +534,7 @@ library RentalityUtils {
   /// @return A tuple containing the PaymentInfo structure and the total amount to be paid in the specified currency.
   function createPaymentInfo(
     RentalityContract memory addresses,
+    address user,
     uint256 carId,
     uint64 startDateTime,
     uint64 endDateTime,
@@ -569,7 +573,7 @@ library RentalityUtils {
 
     Schemas.PaymentInfo memory paymentInfo = Schemas.PaymentInfo(
       0,
-      tx.origin,
+      user,
       address(this),
       carInfo.pricePerDayInUsdCents * daysOfTrip,
       salesTaxes,
@@ -629,13 +633,14 @@ library RentalityUtils {
   }
   function verifyClaim(
     RentalityContract memory addresses,
+    address user,
     Schemas.CreateClaimRequest memory request
   ) public view returns (address, address) {
     Schemas.Trip memory trip = addresses.tripService.getTrip(request.tripId);
 
     require(
-      (trip.host == tx.origin && uint8(request.claimType) <= 7) ||
-        (trip.guest == tx.origin && ((uint8(request.claimType) <= 9) && (uint8(request.claimType) >= 3))),
+      (trip.host == user && uint8(request.claimType) <= 7) ||
+        (trip.guest == user && ((uint8(request.claimType) <= 9) && (uint8(request.claimType) >= 3))),
       'Only for trip host or guest, or wrong claim type.'
     );
 
@@ -646,10 +651,10 @@ library RentalityUtils {
     return (trip.host, trip.guest);
   }
 
-  function verifyConfirmCheckOut(RentalityContract memory contracts, uint tripId) public view {
+  function verifyConfirmCheckOut(RentalityContract memory contracts, address user, uint tripId) public view {
     Schemas.Trip memory trip = contracts.tripService.getTrip(tripId);
 
-    require(trip.guest == tx.origin || contracts.userService.isAdmin(tx.origin), 'For trip guest or admin');
+    require(trip.guest == user || contracts.userService.isAdmin(user), 'For trip guest or admin');
     require(trip.host == trip.tripFinishedBy, 'No needs to confirm.');
     require(trip.status == Schemas.TripStatus.CheckedOutByHost, 'The trip is not in status CheckedOutByHost');
   }

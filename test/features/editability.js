@@ -30,7 +30,8 @@ describe('Ability to update car during trip', function () {
     host,
     guest,
     anonymous,
-    rentalityLocationVerifier
+    rentalityLocationVerifier,
+    rentalityView
 
   beforeEach(async function () {
     ;({
@@ -52,19 +53,20 @@ describe('Ability to update car during trip', function () {
       guest,
       anonymous,
       rentalityLocationVerifier,
+      rentalityView
     } = await loadFixture(deployDefaultFixture))
   })
 
   it('should has editable: false, if car on the trip', async function () {
     await expect(
-      rentalityGateway
+      rentalityPlatform
         .connect(host)
         .addCar(getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin), zeroHash)
     ).not.to.be.reverted
-    const myCars = await rentalityGateway.connect(host).getMyCars()
+    const myCars = await rentalityView.connect(host).getMyCars()
     expect(myCars.length).to.equal(1)
 
-    const availableCars = await rentalityGateway
+    const availableCars = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(
         0,
@@ -76,7 +78,7 @@ describe('Ability to update car during trip', function () {
     expect(availableCars.length).to.equal(1)
     let dailyPriceInUsdCents = 1000
 
-    const result = await rentalityGateway
+    const result = await rentalityView
       .connect(guest)
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
     await expect(
@@ -95,20 +97,20 @@ describe('Ability to update car during trip', function () {
       )
     ).not.to.be.reverted
 
-    const myNotEditableCars = await rentalityGateway.connect(host).getMyCars()
+    const myNotEditableCars = await rentalityView.connect(host).getMyCars()
 
     expect(myNotEditableCars[0].isEditable).to.be.equal(false)
   })
   it('should not be able to edit car, if it on the trip', async function () {
     await expect(
-      rentalityGateway
+      rentalityPlatform
         .connect(host)
         .addCar(getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin), zeroHash)
     ).not.to.be.reverted
-    const myCars = await rentalityGateway.connect(host).getMyCars()
+    const myCars = await rentalityView.connect(host).getMyCars()
     expect(myCars.length).to.equal(1)
 
-    const availableCars = await rentalityGateway
+    const availableCars = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(
         0,
@@ -120,7 +122,7 @@ describe('Ability to update car during trip', function () {
     expect(availableCars.length).to.equal(1)
     let dailyPriceInUsdCents = 1000
 
-    const result = await rentalityGateway
+    const result = await rentalityView
       .connect(guest)
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
     await expect(
@@ -139,7 +141,7 @@ describe('Ability to update car during trip', function () {
       )
     ).not.to.be.reverted
 
-    const myNotEditableCars = await rentalityGateway.connect(host).getMyCars()
+    const myNotEditableCars = await rentalityView.connect(host).getMyCars()
 
     expect(myNotEditableCars[0].isEditable).to.be.equal(false)
 
@@ -160,20 +162,20 @@ describe('Ability to update car during trip', function () {
       signature: signLocationInfo(await rentalityLocationVerifier.getAddress(), admin, emptyLocationInfo),
     }
     await expect(
-      rentalityGateway.connect(host).updateCarInfoWithLocation(update_params, locationInfo)
+      rentalityPlatform.connect(host).updateCarInfoWithLocation(update_params, locationInfo)
     ).to.be.revertedWith('Car is not available for update.')
   })
 
   it('should be again editable after cancellation', async function () {
     await expect(
-      rentalityGateway
+      rentalityPlatform
         .connect(host)
         .addCar(getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin), zeroHash)
     ).not.to.be.reverted
-    const myCars = await rentalityGateway.connect(host).getMyCars()
+    const myCars = await rentalityView.connect(host).getMyCars()
     expect(myCars.length).to.equal(1)
 
-    const availableCars = await rentalityGateway
+    const availableCars = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(
         0,
@@ -186,7 +188,7 @@ describe('Ability to update car during trip', function () {
 
     const rentPriceInUsdCents = 1000
 
-    const result = await rentalityGateway
+    const result = await rentalityView
       .connect(guest)
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
     await expect(
@@ -205,13 +207,13 @@ describe('Ability to update car during trip', function () {
       )
     ).not.to.be.reverted
 
-    const myNotEditableCars = await rentalityGateway.connect(host).getMyCars()
+    const myNotEditableCars = await rentalityView.connect(host).getMyCars()
 
     expect(myNotEditableCars[0].isEditable).to.be.equal(false)
 
-    await rentalityGateway.connect(guest).rejectTripRequest(1)
+    await rentalityPlatform.connect(guest).rejectTripRequest(1)
 
-    const myNotEditableCars2 = await rentalityGateway.connect(host).getMyCars()
+    const myNotEditableCars2 = await rentalityView.connect(host).getMyCars()
 
     expect(myNotEditableCars2[0].isEditable).to.be.equal(true)
   })

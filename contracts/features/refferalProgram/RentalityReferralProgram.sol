@@ -51,7 +51,7 @@ contract RentalityReferralProgram is
     address user
   ) public {
     require(userService.isManager(msg.sender), 'only Manager');
-    (address owner, uint hashPoints) = _getHashProgramInfoIfExists(selector, hash);
+    (address owner, uint hashPoints) = _getHashProgramInfoIfExists(selector, hash, user);
 
     (int points, bool isOneTime) = _setPassedIfExists(selector, callbackArgs, owner != address(0), user);
     if (points > 0) {
@@ -69,15 +69,15 @@ contract RentalityReferralProgram is
     }
   }
 
-  function useDiscount(Schemas.RefferalProgram selector, bool host, uint tripId) public returns (uint) {
+  function useDiscount(address user, Schemas.RefferalProgram selector, bool host, uint tripId) public returns (uint) {
     require(userService.isManager(msg.sender), 'only Manager');
-    uint userPoints = addressToPoints[tx.origin];
+    uint userPoints = addressToPoints[user];
     Schemas.Tear tear = getTearTypeByPoints(userPoints);
     uint percents = 0;
     if (Schemas.Tear.Tear1 != tear) {
       (uint possibleDiscount, uint points) = getDiscount(selector, tear);
       require(points > 0 && userPoints >= points, 'Not enough tokens');
-      addressToPoints[tx.origin] -= points;
+      addressToPoints[user] -= points;
       percents = possibleDiscount;
     }
     if (percents > 0) {
@@ -100,7 +100,7 @@ contract RentalityReferralProgram is
       for (uint i = 0; i < toClaim.length; i++) {
         total += toClaim[i].points;
       }
-      total += updateDaily();
+      total += updateDaily(user);
       (uint dailiListingPoints, uint[] memory cars) = RentalityRefferalLib.calculateListedCarsPoints(
         permanentSelectorToPoints[Schemas.RefferalProgram.DailyListing].points,
         user,

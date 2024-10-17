@@ -40,7 +40,8 @@ describe('Admin trip searching', function () {
     guest,
     anonymous,
     rentalityAdminGateway,
-    rentalityLocationVerifier
+    rentalityLocationVerifier,
+    rentalityView
 
   beforeEach(async function () {
     ;({
@@ -65,6 +66,7 @@ describe('Admin trip searching', function () {
       guest,
       anonymous,
       rentalityAdminGateway,
+      rentalityView,
       rentalityLocationVerifier,
     } = await loadFixture(deployDefaultFixture))
   })
@@ -86,11 +88,11 @@ describe('Admin trip searching', function () {
       admin,
       request.locationInfo.locationInfo
     )
-    await expect(rentalityGateway.connect(host).addCar(request, zeroHash)).not.to.be.reverted
-    const myCars = await rentalityGateway.connect(host).getMyCars()
+    await expect(rentalityPlatform.connect(host).addCar(request, zeroHash)).not.to.be.reverted
+    const myCars = await rentalityView.connect(host).getMyCars()
     expect(myCars.length).to.equal(1)
 
-    const availableCars = await rentalityGateway
+    const availableCars = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(
         0,
@@ -103,13 +105,13 @@ describe('Admin trip searching', function () {
 
     const oneDayInSeconds = 86400
 
-    const resultPayments = await rentalityGateway
+    const resultPayments = await rentalityView
       .connect(guest)
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
     let startDateTime = Date.now() - 10
     let endDateTime = Date.now() + oneDayInSeconds + 10
     await expect(
-      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
+      await rentalityPlatform.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
@@ -152,11 +154,11 @@ describe('Admin trip searching', function () {
       admin,
       request.locationInfo.locationInfo
     )
-    await expect(rentalityGateway.connect(host).addCar(request, zeroHash)).not.to.be.reverted
-    const myCars = await rentalityGateway.connect(host).getMyCars()
+    await expect(rentalityPlatform.connect(host).addCar(request, zeroHash)).not.to.be.reverted
+    const myCars = await rentalityView.connect(host).getMyCars()
     expect(myCars.length).to.equal(1)
 
-    const availableCars = await rentalityGateway
+    const availableCars = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(
         0,
@@ -169,7 +171,7 @@ describe('Admin trip searching', function () {
 
     const oneDayInSeconds = 86400
 
-    const resultPayments = await rentalityGateway.calculatePaymentsWithDelivery(
+    const resultPayments = await rentalityView.calculatePaymentsWithDelivery(
       1,
       2,
       ethToken,
@@ -180,7 +182,7 @@ describe('Admin trip searching', function () {
     let endDateTime = Date.now() + oneDayInSeconds * 2
     for (let i = 0; i < 10; i++) {
       await expect(
-        await rentalityGateway.connect(guest).createTripRequestWithDelivery(
+        await rentalityPlatform.connect(guest).createTripRequestWithDelivery(
           {
             carId: 1,
             startDateTime: Date.now(),
@@ -247,11 +249,11 @@ describe('Admin trip searching', function () {
       admin,
       request.locationInfo.locationInfo
     )
-    await expect(rentalityGateway.connect(host).addCar(request, zeroHash)).not.to.be.reverted
-    const myCars = await rentalityGateway.connect(host).getMyCars()
+    await expect(rentalityPlatform.connect(host).addCar(request, zeroHash)).not.to.be.reverted
+    const myCars = await rentalityView.connect(host).getMyCars()
     expect(myCars.length).to.equal(1)
 
-    const availableCars = await rentalityGateway
+    const availableCars = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(
         0,
@@ -264,7 +266,7 @@ describe('Admin trip searching', function () {
 
     const oneDayInSeconds = 86400
 
-    const resultPayments = await rentalityGateway.calculatePaymentsWithDelivery(
+    const resultPayments = await rentalityView.calculatePaymentsWithDelivery(
       1,
       2,
       ethToken,
@@ -277,7 +279,7 @@ describe('Admin trip searching', function () {
     searchFiler.paymentStatus = PaymentStatus.Prepayment
 
     await expect(
-      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
+      await rentalityPlatform.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
@@ -293,33 +295,33 @@ describe('Admin trip searching', function () {
     expect(result.trips.length).to.be.eq(1)
     expect(result.trips[0].trip.tripId).to.be.eq(1)
 
-    await expect(rentalityGateway.connect(host).approveTripRequest(1)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).approveTripRequest(1)).not.to.be.reverted
     result = await rentalityAdminGateway.getAllTrips(searchFiler, 1, 3)
     expect(result.trips.length).to.be.eq(1)
     expect(result.trips[0].trip.tripId).to.be.eq(1)
 
-    await expect(rentalityGateway.connect(host).checkInByHost(1, [0, 0], '', '')).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).checkInByHost(1, [0, 0], '', '')).not.to.be.reverted
     result = await rentalityAdminGateway.getAllTrips(searchFiler, 1, 3)
     expect(result.trips.length).to.be.eq(1)
 
     expect(result.trips[0].trip.tripId).to.be.eq(1)
 
-    await expect(rentalityGateway.connect(guest).checkInByGuest(1, [0, 0])).not.to.be.reverted
+    await expect(rentalityPlatform.connect(guest).checkInByGuest(1, [0, 0])).not.to.be.reverted
     result = await rentalityAdminGateway.getAllTrips(searchFiler, 1, 3)
     expect(result.trips.length).to.be.eq(1)
     expect(result.trips[0].trip.tripId).to.be.eq(1)
 
-    await expect(rentalityGateway.connect(guest).checkOutByGuest(1, [0, 0], zeroHash)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(guest).checkOutByGuest(1, [0, 0], zeroHash)).not.to.be.reverted
     result = await rentalityAdminGateway.getAllTrips(searchFiler, 1, 3)
     expect(result.trips.length).to.be.eq(1)
     expect(result.trips[0].trip.tripId).to.be.eq(1)
 
-    await expect(rentalityGateway.connect(host).checkOutByHost(1, [0, 0])).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).checkOutByHost(1, [0, 0])).not.to.be.reverted
     result = await rentalityAdminGateway.getAllTrips(searchFiler, 1, 3)
     expect(result.trips.length).to.be.eq(1)
     expect(result.trips[0].trip.tripId).to.be.eq(1)
 
-    await expect(rentalityGateway.connect(host).finishTrip(1, zeroHash)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).finishTrip(1, zeroHash)).not.to.be.reverted
     result = await rentalityAdminGateway.getAllTrips(searchFiler, 1, 3)
     expect(result.trips.length).to.be.eq(0)
 
@@ -345,11 +347,11 @@ describe('Admin trip searching', function () {
       admin,
       request.locationInfo.locationInfo
     )
-    await expect(rentalityGateway.connect(host).addCar(request, zeroHash)).not.to.be.reverted
-    const myCars = await rentalityGateway.connect(host).getMyCars()
+    await expect(rentalityPlatform.connect(host).addCar(request, zeroHash)).not.to.be.reverted
+    const myCars = await rentalityView.connect(host).getMyCars()
     expect(myCars.length).to.equal(1)
 
-    const availableCars = await rentalityGateway
+    const availableCars = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(
         0,
@@ -362,7 +364,7 @@ describe('Admin trip searching', function () {
 
     const oneDayInSeconds = 86400
 
-    const resultPayments = await rentalityGateway.calculatePaymentsWithDelivery(
+    const resultPayments = await rentalityView.calculatePaymentsWithDelivery(
       1,
       2,
       ethToken,
@@ -375,7 +377,7 @@ describe('Admin trip searching', function () {
     searchFiler.paymentStatus = PaymentStatus.Prepayment
 
     await expect(
-      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
+      await rentalityPlatform.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
@@ -391,18 +393,18 @@ describe('Admin trip searching', function () {
     expect(result.trips.length).to.be.eq(1)
     expect(result.trips[0].trip.tripId).to.be.eq(1)
 
-    await expect(rentalityGateway.connect(host).approveTripRequest(1)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).approveTripRequest(1)).not.to.be.reverted
     result = await rentalityAdminGateway.getAllTrips(searchFiler, 1, 3)
     expect(result.trips.length).to.be.eq(1)
     expect(result.trips[0].trip.tripId).to.be.eq(1)
 
-    await expect(rentalityGateway.connect(host).checkInByHost(1, [0, 0], '', '')).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).checkInByHost(1, [0, 0], '', '')).not.to.be.reverted
     result = await rentalityAdminGateway.getAllTrips(searchFiler, 1, 3)
     expect(result.trips.length).to.be.eq(1)
 
     expect(result.trips[0].trip.tripId).to.be.eq(1)
 
-    await expect(rentalityGateway.connect(host).checkOutByHost(1, [0, 0])).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).checkOutByHost(1, [0, 0])).not.to.be.reverted
     searchFiler.paymentStatus = PaymentStatus.Unpaid
     result = await rentalityAdminGateway.getAllTrips(searchFiler, 1, 3)
     expect(result.trips.length).to.be.eq(1)
@@ -432,11 +434,11 @@ describe('Admin trip searching', function () {
       admin,
       request.locationInfo.locationInfo
     )
-    await expect(rentalityGateway.connect(host).addCar(request, zeroHash)).not.to.be.reverted
-    const myCars = await rentalityGateway.connect(host).getMyCars()
+    await expect(rentalityPlatform.connect(host).addCar(request, zeroHash)).not.to.be.reverted
+    const myCars = await rentalityView.connect(host).getMyCars()
     expect(myCars.length).to.equal(1)
 
-    const availableCars = await rentalityGateway
+    const availableCars = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(
         0,
@@ -449,7 +451,7 @@ describe('Admin trip searching', function () {
 
     const oneDayInSeconds = 86400
 
-    const resultPayments = await rentalityGateway.calculatePaymentsWithDelivery(
+    const resultPayments = await rentalityView.calculatePaymentsWithDelivery(
       1,
       2,
       ethToken,
@@ -462,7 +464,7 @@ describe('Admin trip searching', function () {
     searchFiler.paymentStatus = PaymentStatus.Prepayment
 
     await expect(
-      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
+      await rentalityPlatform.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
@@ -477,7 +479,7 @@ describe('Admin trip searching', function () {
 
     searchFiler.paymentStatus = PaymentStatus.RefundToGuest
 
-    await expect(rentalityGateway.connect(host).rejectTripRequest(1)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).rejectTripRequest(1)).not.to.be.reverted
     let result = await rentalityAdminGateway.getAllTrips(searchFiler, 1, 3)
     expect(result.trips.length).to.be.eq(1)
     expect(result.trips[0].trip.tripId).to.be.eq(1)
@@ -499,11 +501,11 @@ describe('Admin trip searching', function () {
       admin,
       request.locationInfo.locationInfo
     )
-    await expect(rentalityGateway.connect(host).addCar(request, zeroHash)).not.to.be.reverted
-    const myCars = await rentalityGateway.connect(host).getMyCars()
+    await expect(rentalityPlatform.connect(host).addCar(request, zeroHash)).not.to.be.reverted
+    const myCars = await rentalityView.connect(host).getMyCars()
     expect(myCars.length).to.equal(1)
 
-    const availableCars = await rentalityGateway
+    const availableCars = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(
         0,
@@ -516,7 +518,7 @@ describe('Admin trip searching', function () {
 
     const oneDayInSeconds = 86400
 
-    const resultPayments = await rentalityGateway.calculatePaymentsWithDelivery(
+    const resultPayments = await rentalityView.calculatePaymentsWithDelivery(
       1,
       2,
       ethToken,
@@ -530,7 +532,7 @@ describe('Admin trip searching', function () {
     searchFiler.status = AdminTripStatus.Created
 
     await expect(
-      await rentalityGateway.connect(guest).createTripRequestWithDelivery(
+      await rentalityPlatform.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
@@ -546,21 +548,21 @@ describe('Admin trip searching', function () {
     expect(result.trips.length).to.be.eq(1)
     expect(result.trips[0].trip.tripId).to.be.eq(1)
 
-    await expect(rentalityGateway.connect(host).approveTripRequest(1)).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).approveTripRequest(1)).not.to.be.reverted
     searchFiler.status = AdminTripStatus.Approved
     result = await rentalityAdminGateway.getAllTrips(searchFiler, 1, 3)
     expect(result.trips.length).to.be.eq(1)
     expect(result.trips[0].trip.tripId).to.be.eq(1)
 
     searchFiler.status = AdminTripStatus.CheckedInByHost
-    await expect(rentalityGateway.connect(host).checkInByHost(1, [0, 0], '', '')).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).checkInByHost(1, [0, 0], '', '')).not.to.be.reverted
     result = await rentalityAdminGateway.getAllTrips(searchFiler, 1, 3)
     expect(result.trips.length).to.be.eq(1)
     expect(result.trips[0].trip.tripId).to.be.eq(1)
 
     searchFiler.paymentStatus = PaymentStatus.Unpaid
     searchFiler.status = AdminTripStatus.CompletedWithoutGuestConfirmation
-    await expect(rentalityGateway.connect(host).checkOutByHost(1, [0, 0])).not.to.be.reverted
+    await expect(rentalityPlatform.connect(host).checkOutByHost(1, [0, 0])).not.to.be.reverted
     result = await rentalityAdminGateway.getAllTrips(searchFiler, 1, 3)
     expect(result.trips.length).to.be.eq(1)
     expect(result.trips[0].trip.tripId).to.be.eq(1)
@@ -577,7 +579,7 @@ describe('Admin trip searching', function () {
   it('All cars pagination test', async function () {
     for (let i = 0; i < 10; i++)
       await expect(
-        rentalityGateway
+        rentalityPlatform
           .connect(host)
           .addCar(getMockCarRequest(i, await rentalityLocationVerifier.getAddress(), admin), zeroHash)
       ).not.to.be.reverted

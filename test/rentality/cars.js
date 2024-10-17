@@ -5,11 +5,11 @@ const { getEmptySearchCarParams, emptyLocationInfo } = require('../utils')
 const { deployDefaultFixture } = require('./deployments')
 describe('Rentality: cars', function () {
   it('Host can add car to rentality', async function () {
-    const { rentalityCarToken, rentalityGateway, host, admin, rentalityLocationVerifier } =
+    const { rentalityCarToken, rentalityView, rentalityPlatform, host, admin, rentalityLocationVerifier } =
       await loadFixture(deployDefaultFixture)
 
     await expect(
-      rentalityGateway
+      rentalityPlatform
         .connect(host)
         .addCar(getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin), zeroHash)
     ).not.to.be.reverted
@@ -17,11 +17,11 @@ describe('Rentality: cars', function () {
     expect(myCars.length).to.equal(1)
   })
   it('Host dont see own cars as available', async function () {
-    const { rentalityGateway, rentalityCarToken, host, rentalityLocationVerifier, admin } =
+    const { rentalityPlatform, rentalityCarToken, host, rentalityLocationVerifier, admin } =
       await loadFixture(deployDefaultFixture)
 
     await expect(
-      rentalityGateway
+      rentalityPlatform
         .connect(host)
         .addCar(getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin), zeroHash)
     ).not.to.be.reverted
@@ -31,17 +31,17 @@ describe('Rentality: cars', function () {
     expect(availableCars.length).to.equal(0)
   })
   it('Guest see cars as available', async function () {
-    const { rentalityCarToken, host, guest, rentalityLocationVerifier, admin, rentalityGateway } =
+    const { rentalityCarToken,rentalityPlatform, host,rentalityView, guest, rentalityLocationVerifier, admin, rentalityGateway } =
       await loadFixture(deployDefaultFixture)
 
     await expect(
-      rentalityGateway
+      rentalityPlatform
         .connect(host)
         .addCar(getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin), zeroHash)
     ).not.to.be.reverted
     const myCars = await rentalityCarToken.connect(host).getCarsOwnedByUser(host.address)
     expect(myCars.length).to.equal(1)
-    const availableCars = await rentalityGateway
+    const availableCars = await rentalityView
       .connect(guest)
       .searchAvailableCarsWithDelivery(
         0,

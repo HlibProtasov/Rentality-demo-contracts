@@ -595,8 +595,8 @@ async function deployDefaultFixture() {
   const hostSignature = await signTCMessage(host)
   const guestSignature = await signTCMessage(guest)
   const adminKyc = signKycInfo(await rentalityLocationVerifier.getAddress(), admin, zeroHash)
-  await rentalityGateway.connect(host).setKYCInfo(' ', ' ', ' ', hostSignature, zeroHash)
-  await rentalityGateway.connect(guest).setKYCInfo(' ', ' ', ' ', guestSignature, zeroHash)
+  await rentalityPlatform.connect(host).setKYCInfo(' ', ' ', ' ', hostSignature, zeroHash)
+  await rentalityPlatform.connect(guest).setKYCInfo(' ', ' ', ' ', guestSignature, zeroHash)
 
   await rentalityCurrencyConverter.addCurrencyType(
     await usdtContract.getAddress(),
@@ -645,6 +645,7 @@ async function deployDefaultFixture() {
     insuranceService,
     refferalProgram,
     hashCreator,
+    rentalityView
   }
 }
 

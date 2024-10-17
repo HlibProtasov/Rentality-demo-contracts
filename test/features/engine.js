@@ -22,7 +22,8 @@ describe('RentalityEngines', function () {
     manager,
     host,
     guest,
-    anonymous
+    anonymous,
+    rentalityView
 
   beforeEach(async function () {
     ;({
@@ -45,6 +46,7 @@ describe('RentalityEngines', function () {
       host,
       guest,
       anonymous,
+      rentalityView
     } = await loadFixture(deployDefaultFixture))
   })
 

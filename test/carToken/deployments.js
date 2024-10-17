@@ -286,9 +286,9 @@ async function deployDefaultFixture() {
   const guestSignature = await signTCMessage(guest)
   const deployerSignature = await signTCMessage(owner)
   const adminKyc = signKycInfo(await rentalityLocationVerifier.getAddress(), admin, zeroHash)
-  await rentalityGateway.connect(host).setKYCInfo(' ', ' ', ' ', hostSignature, zeroHash)
-  await rentalityGateway.connect(guest).setKYCInfo(' ', ' ', ' ', guestSignature, zeroHash)
-  await rentalityGateway.setKYCInfo(' ', ' ', ' ', deployerSignature, zeroHash)
+  await rentalityPlatform.connect(host).setKYCInfo(' ', ' ', ' ', hostSignature, zeroHash)
+  await rentalityPlatform.connect(guest).setKYCInfo(' ', ' ', ' ', guestSignature, zeroHash)
+  await rentalityPlatform.setKYCInfo(' ', ' ', ' ', deployerSignature, zeroHash)
 
   return {
     rentalityCarToken,
@@ -326,7 +326,7 @@ async function deployFixtureWith1Car() {
 
   const request = getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin)
 
-  await rentalityGateway.connect(host).addCar(request, zeroHash)
+  await rentalityPlatform.connect(host).addCar(request, zeroHash)
 
   return {
     rentalityCarToken,
@@ -342,6 +342,8 @@ async function deployFixtureWith1Car() {
     anonymous,
     geoParserMock,
     rentalityLocationVerifier,
+    rentalityView, 
+    rentalityPlatform,
   }
 }
 

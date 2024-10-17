@@ -10,17 +10,17 @@ abstract contract ARentalityRefferalHasher is ARentalityRefferal {
   mapping(bytes32 => address) private hashToOwner;
   mapping(Schemas.RefferalProgram => uint) internal selectorHashToPoints;
 
-  function generateReferralHash() public {
-    bytes32 hash = createReferralHash();
-    hashToOwner[hash] = tx.origin;
-    referralHash[tx.origin] = hash;
+  function generateReferralHash(address user) public {
+    bytes32 hash = createReferralHash(user);
+    hashToOwner[hash] = user;
+    referralHash[user] = hash;
   }
   function hashExists(bytes32 hash) public view returns (bool) {
     return hashToOwner[hash] != address(0);
   }
 
-  function createReferralHash() internal view returns (bytes32) {
-    return keccak256(abi.encode(this.generateReferralHash.selector, tx.origin));
+  function createReferralHash(address user) internal view returns (bytes32) {
+    return keccak256(abi.encode(this.generateReferralHash.selector, user));
   }
   function manageRefHashesProgram(Schemas.RefferalProgram selector, uint points) public {
     require(getUserService().isManager(msg.sender), 'only Manager');
@@ -28,9 +28,10 @@ abstract contract ARentalityRefferalHasher is ARentalityRefferal {
   }
   function _getHashProgramInfoIfExists(
     Schemas.RefferalProgram programSelector,
-    bytes32 hash
+    bytes32 hash,
+    address user
   ) internal view returns (address, uint) {
-    require(createReferralHash() != hash, 'own hash');
+    require(createReferralHash(user) != hash, 'own hash');
     (address resultAddress, uint resultPoints) = (address(0), 0);
     if (selectorHashToPoints[programSelector] > 0) {
       (resultAddress, resultPoints) = (hashToOwner[hash], selectorHashToPoints[programSelector]);

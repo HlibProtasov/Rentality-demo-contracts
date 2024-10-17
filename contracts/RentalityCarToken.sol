@@ -128,14 +128,15 @@ contract RentalityCarToken is ERC721URIStorageUpgradeable, UUPSOwnable {
   /// @notice Adds a new car to the system with the provided information.
   /// @param request The input parameters for creating the new car.
   /// @return The ID of the newly added car.
-  function addCar(Schemas.CreateCarRequest memory request) public returns (uint) {
-    require(userService.hasPassedKYCAndTC(tx.origin), 'KYC or TC has not passed.');
+  function addCar(address user, Schemas.CreateCarRequest memory request) public returns (uint) {
+    require(userService.isManager(msg.sender),"only Manager");
+    require(userService.hasPassedKYCAndTC(user), 'KYC or TC has not passed.');
     require(request.pricePerDayInUsdCents > 0, "Make sure the price isn't negative");
     require(request.milesIncludedPerDay > 0, "Make sure the included distance isn't negative");
     require(isUniqueVinNumber(request.carVinNumber), 'Car with this VIN number already exists');
     geoService.verifySignedLocationInfo(request.locationInfo);
-    if (!userService.isHost(tx.origin)) {
-      userService.grantHostRole(tx.origin);
+    if (!userService.isHost(user)) {
+      userService.grantHostRole(user);
     }
 
     _carIdCounter.increment();
@@ -143,7 +144,7 @@ contract RentalityCarToken is ERC721URIStorageUpgradeable, UUPSOwnable {
 
     engineService.verifyCreateParams(request.engineType, request.engineParams);
 
-    _safeMint(tx.origin, newCarId);
+    _safeMint(user, newCarId);
     _setTokenURI(newCarId, request.tokenUri);
 
     bytes32 hash = geoService.createLocationInfo(request.locationInfo.locationInfo);
@@ -152,7 +153,7 @@ contract RentalityCarToken is ERC721URIStorageUpgradeable, UUPSOwnable {
       newCarId,
       request.carVinNumber,
       keccak256(abi.encodePacked(request.carVinNumber)),
-      tx.origin,
+      user,
       request.brand,
       request.model,
       request.yearOfProduction,
@@ -173,7 +174,7 @@ contract RentalityCarToken is ERC721URIStorageUpgradeable, UUPSOwnable {
 
     _approve(address(this), newCarId);
 
-    emit CarAddedSuccess(newCarId, request.carVinNumber, tx.origin, request.pricePerDayInUsdCents, true);
+    emit CarAddedSuccess(newCarId, request.carVinNumber, user, request.pricePerDayInUsdCents, true);
 
     return newCarId;
   }
@@ -184,13 +185,14 @@ contract RentalityCarToken is ERC721URIStorageUpgradeable, UUPSOwnable {
   /// can be empty if updateLocation is false
   /// @param updateLocation Wether update location or not
   function updateCarInfo(
+    address user,
     Schemas.UpdateCarInfoRequest memory request,
     Schemas.LocationInfo memory location,
     bool updateLocation
   ) public {
     require(userService.isManager(msg.sender), 'Only from manager contract.');
     require(_exists(request.carId), 'Token does not exist');
-    require(ownerOf(request.carId) == tx.origin, 'Only the owner of the car can update car info');
+    require(ownerOf(request.carId) == user, 'Only the owner of the car can update car info');
     require(request.pricePerDayInUsdCents > 0, "Make sure the price isn't negative");
     require(request.milesIncludedPerDay > 0, "Make sure the included distance isn't negative");
 
@@ -229,23 +231,24 @@ contract RentalityCarToken is ERC721URIStorageUpgradeable, UUPSOwnable {
   /// @notice Updates the token URI associated with a specific car.
   /// @param carId The ID of the car.
   /// @param tokenUri The new token URI.
-  function updateCarTokenUri(uint256 carId, string memory tokenUri) public {
+  function updateCarTokenUri(address user, uint256 carId, string memory tokenUri) public {
+    require(userService.isManager(msg.sender),"only Manager");
     require(_exists(carId), 'Token does not exist');
-    require(ownerOf(carId) == tx.origin, 'Only the owner of the car can update the token URI');
+    require(ownerOf(carId) == user, 'Only the owner of the car can update the token URI');
 
     _setTokenURI(carId, tokenUri);
   }
 
   /// @notice Burns a specific car token, removing it from the system.
   /// @param carId The ID of the car to be burned.
-  function burnCar(uint256 carId) public {
+  function burnCar(address user, uint256 carId) public {
     require(_exists(carId), 'Token does not exist');
-    require(ownerOf(carId) == tx.origin, 'Only the owner of the car can burn the token');
+    require(ownerOf(carId) == user, 'Only the owner of the car can burn the token');
 
     _burn(carId);
     delete idToCarInfo[carId];
 
-    emit CarRemovedSuccess(carId, idToCarInfo[carId].carVinNumber, tx.origin);
+    emit CarRemovedSuccess(carId, idToCarInfo[carId].carVinNumber, user);
   }
   /// @notice temporary disable transfer function
   function transferFrom(address, address, uint256) public pure override(ERC721Upgradeable, IERC721Upgradeable) {
