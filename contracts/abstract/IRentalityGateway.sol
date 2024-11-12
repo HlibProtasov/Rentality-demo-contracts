@@ -107,7 +107,7 @@ interface IRentalityGateway {
   /// @notice Get information about a specific car by ID.
   /// @param carId The ID of the car.
   /// @return CarInfo structure containing details about the specified car.
-  function getCarInfoById(uint256 carId) external view returns (Schemas.CarInfoWithInsurance memory);
+  function getCarInfoById(uint256 carId) external view returns (Schemas.CarInfo memory);
 
   /// @notice Retrieves detailed information about a car.
   /// @param carId The ID of the car for which details are requested.
@@ -301,28 +301,6 @@ interface IRentalityGateway {
   /// @param host A boolean indicating whether to retrieve insurance for hosts (true) or guests (false)
   /// @return An array of chat information.
   function getChatInfoFor(bool host) external view returns (Schemas.ChatInfo[] memory);
-
-  /// ------------------------------
-  /// INSURANCE functions
-  /// ------------------------------
-
-  /// @notice Retrieves insurance info
-  /// @param host A boolean indicating whether to retrieve insurance for hosts (true) or guests (false)
-  /// @return An array of insurance options available for the specified host status
-  function getInsurancesBy(bool host) external view returns (Schemas.InsuranceDTO[] memory);
-
-  /// @notice Retrieves insurance information for the guest
-  /// @return An array of insurance information specific to the guest
-  function getMyInsurancesAsGuest() external view returns (Schemas.InsuranceInfo[] memory);
-
-  /// @notice Saves insurance information related to a specific trip
-  /// @param tripId The ID of the trip for which the insurance information is being saved
-  /// @param insuranceInfo A struct containing the details of the insurance to be saved
-  function saveTripInsuranceInfo(uint tripId, Schemas.SaveInsuranceRequest memory insuranceInfo) external;
-
-  /// @notice Saves insurance information for a guest
-  /// @param insuranceInfo A struct containing the details of the insurance requested by the guest
-  function saveGuestInsurance(Schemas.SaveInsuranceRequest memory insuranceInfo) external;
 
   /// ------------------------------
   /// GENERAL functions

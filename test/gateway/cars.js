@@ -115,12 +115,13 @@ describe('RentalityGateway: car', function () {
       carId: 1,
       pricePerDayInUsdCents: 2,
       securityDepositPerTripInUsdCents: 2,
-      engineParams: [2],
+      engineParams: [2,2],
       milesIncludedPerDay: 2,
       timeBufferBetweenTripsInSec: 2,
       currentlyListed: false,
-      insuranceRequired: false,
-      insurancePriceInUsdCents: 0,
+      insuranceIncluded: true,
+      engineType: 1,
+      tokenUri: "uri"
     }
     let locationInfo = {
       locationInfo: emptyLocationInfo,
@@ -187,8 +188,6 @@ describe('RentalityGateway: car', function () {
       insuranceIncluded: true,
       locationInfo: locationInfo1,
       currentlyListed: true,
-      insuranceRequired: false,
-      insurancePriceInUsdCents: 0,
     }
     const oneDayInSec = 86400
     const totalTripDays = 7
@@ -245,8 +244,6 @@ describe('RentalityGateway: car', function () {
       insuranceIncluded: true,
       locationInfo: locationInfo1,
       currentlyListed: true,
-      insuranceRequired: false,
-      insurancePriceInUsdCents: 0,
     }
     await expect(await rentalityGateway.connect(host).addCar(addCarRequest, zeroHash)).not.be.reverted
     const result = await rentalityGateway.connect(guest).getCarDetails(1)
@@ -299,8 +296,6 @@ describe('RentalityGateway: car', function () {
         insuranceIncluded: true,
         locationInfo: locationInfo1,
         currentlyListed: true,
-        insuranceRequired: false,
-        insurancePriceInUsdCents: 0,
       }
     }
     await expect(
@@ -386,8 +381,6 @@ describe('RentalityGateway: car', function () {
         insuranceIncluded: true,
         locationInfo: locationInfo1,
         currentlyListed: true,
-        insuranceRequired: false,
-        insurancePriceInUsdCents: 0,
       }
     }
     await expect(

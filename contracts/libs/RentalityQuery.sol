@@ -16,7 +16,6 @@ import '../Schemas.sol';
 import {RentalityTripsQuery} from './RentalityTripsQuery.sol';
 import {CurrencyRate as ClaimCurrencyRate} from '../features/RentalityClaimService.sol';
 import {RentalityReferralProgram} from '../features/refferalProgram/RentalityReferralProgram.sol';
-import {RentalityInsurance} from '../payments/RentalityInsurance.sol';
 library RentalityQuery {
   /// @notice Checks if a car intersects with a trip's scheduled time.
   /// @dev This function verifies if the car for the given trip overlaps with the specified time interval.
@@ -257,10 +256,8 @@ library RentalityQuery {
     Schemas.SearchCarParams memory searchParams,
     Schemas.LocationInfo memory pickUpInfo,
     Schemas.LocationInfo memory returnInfo,
-    address deliveryServiceAddress,
-    address insuranceServiceAddress
+    address deliveryServiceAddress
   ) public view returns (Schemas.SearchCar[] memory result) {
-    RentalityInsurance insuranceService = RentalityInsurance(insuranceServiceAddress);
     RentalityCarToken carService = contracts.carService;
     Schemas.CarInfo[] memory availableCars = carService.fetchAvailableCarsForUser(user, searchParams);
     if (availableCars.length == 0) return new Schemas.SearchCar[](0);
@@ -359,8 +356,7 @@ library RentalityQuery {
         pickUp,
         dropOf,
         temp[i].insuranceIncluded,
-        IRentalityGeoService(carService.getGeoServiceAddress()).getLocationInfo(temp[i].locationHash),
-        insuranceService.getCarInsuranceInfo(temp[i].carId)
+        IRentalityGeoService(carService.getGeoServiceAddress()).getLocationInfo(temp[i].locationHash)
       );
     }
     return result;
@@ -385,8 +381,7 @@ library RentalityQuery {
     Schemas.SearchCarParams memory searchParams,
     Schemas.LocationInfo memory pickUpInfo,
     Schemas.LocationInfo memory returnInfo,
-    address deliveryServiceAddress,
-    address insuranceService
+    address deliveryServiceAddress
   ) public view returns (Schemas.SearchCarWithDistance[] memory) {
     return
       RentalityCarDelivery(deliveryServiceAddress).sortCarsByDistance(
@@ -398,8 +393,7 @@ library RentalityQuery {
           searchParams,
           pickUpInfo,
           returnInfo,
-          deliveryServiceAddress,
-          insuranceService
+          deliveryServiceAddress
         ),
         searchParams.userLocation
       );
@@ -522,7 +516,8 @@ library RentalityQuery {
       car.engineParams,
       geo.getCarCoordinateValidity(carId),
       car.currentlyListed,
-      geo.getLocationInfo(car.locationHash)
+      geo.getLocationInfo(car.locationHash),
+      car.carVinNumber
     );
   }
 

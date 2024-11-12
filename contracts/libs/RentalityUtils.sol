@@ -9,7 +9,6 @@ import '../abstract/IRentalityGeoService.sol';
 import '../RentalityTripService.sol';
 import '../payments/RentalityCurrencyConverter.sol';
 import '../payments/RentalityPaymentService.sol';
-import '../payments/RentalityInsurance.sol';
 import {RentalityContract} from '../RentalityGateway.sol';
 import {RentalityCarDelivery} from '../features/RentalityCarDelivery.sol';
 import {RentalityReferralProgram} from '../features/refferalProgram/RentalityReferralProgram.sol';
@@ -406,8 +405,7 @@ library RentalityUtils {
     uint64 daysOfTrip,
     address currency,
     Schemas.LocationInfo memory pickUpLocation,
-    Schemas.LocationInfo memory returnLocation,
-    RentalityInsurance insuranceService
+    Schemas.LocationInfo memory returnLocation
   ) public view returns (Schemas.CalculatePaymentsDTO memory) {
     uint64 deliveryFee = RentalityCarDelivery(addresses.adminService.getDeliveryServiceAddress())
       .calculatePriceByDeliveryDataInUsdCents(
@@ -421,7 +419,7 @@ library RentalityUtils {
         ),
         addresses.carService.getCarInfoById(carId).createdBy
       );
-    return calculatePayments(addresses, carId, daysOfTrip, currency, deliveryFee, insuranceService);
+    return calculatePayments(addresses, carId, daysOfTrip, currency, deliveryFee);
   }
   /// @notice Checks if a car is available for a specific user based on search parameters.
   /// @dev Calculates the payments for a trip.
@@ -434,8 +432,7 @@ library RentalityUtils {
     uint carId,
     uint64 daysOfTrip,
     address currency,
-    uint64 deliveryFee,
-    RentalityInsurance insuranceService
+    uint64 deliveryFee
   ) public view returns (Schemas.CalculatePaymentsDTO memory) {
     address carOwner = addresses.carService.ownerOf(carId);
     Schemas.CarInfo memory car = addresses.carService.getCarInfoById(carId);
@@ -454,9 +451,6 @@ library RentalityUtils {
     );
     uint totalPrice = car.securityDepositPerTripInUsdCents + salesTaxes + govTax + sumWithDiscount + deliveryFee;
 
-    if (!insuranceService.isGuestHasInsurance(tx.origin)) {
-      totalPrice += insuranceService.getInsurancePriceByCar(carId) * daysOfTrip;
-    }
 
     (uint256 valueSumInCurrency, int rate, uint8 decimals) = addresses.currencyConverterService.getFromUsdLatest(
       currency,

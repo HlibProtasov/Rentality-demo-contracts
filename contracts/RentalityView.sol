@@ -8,7 +8,6 @@ import './RentalityPlatform.sol';
 import './RentalityTripService.sol';
 import './RentalityUserService.sol';
 import './RentalityCarToken.sol';
-import './payments/RentalityInsurance.sol';
 import './features/RentalityClaimService.sol';
 import './payments/RentalityPaymentService.sol';
 import './payments/RentalityCurrencyConverter.sol';
@@ -29,13 +28,11 @@ contract RentalityView is UUPSUpgradeable, Initializable {
   using RentalityQuery for RentalityContract;
   using RentalityTripsQuery for RentalityContract;
 
-  RentalityInsurance private insuranceService;
 
   RentalityReferralProgram private refferalService;
-  function updateServiceAddresses(RentalityContract memory contracts, address insuranceServiceAddress) public {
+  function updateServiceAddresses(RentalityContract memory contracts) public {
     require(addresses.userService.isAdmin(tx.origin), 'only Admin.');
     addresses = contracts;
-    insuranceService = RentalityInsurance(insuranceServiceAddress);
   }
 
   fallback(bytes calldata) external returns (bytes memory) {
@@ -44,12 +41,9 @@ contract RentalityView is UUPSUpgradeable, Initializable {
   /// @notice Retrieves information about a car by its ID.
   /// @param carId The ID of the car.
   /// @return Car information as a struct.
-  function getCarInfoById(uint256 carId) public view returns (Schemas.CarInfoWithInsurance memory) {
+  function getCarInfoById(uint256 carId) public view returns (Schemas.CarInfo memory) {
     return
-      Schemas.CarInfoWithInsurance(
-        addresses.carService.getCarInfoById(carId),
-        insuranceService.getCarInsuranceInfo(carId)
-      );
+        addresses.carService.getCarInfoById(carId);
   }
 
   /// @notice Retrieves the metadata URI of a car by its ID.
@@ -126,8 +120,7 @@ contract RentalityView is UUPSUpgradeable, Initializable {
         searchParams,
         pickUpInfo,
         returnInfo,
-        RentalityAdminGateway(addresses.adminService).getDeliveryServiceAddress(),
-        address(insuranceService)
+        RentalityAdminGateway(addresses.adminService).getDeliveryServiceAddress()
         // address(refferalService)
       );
   }
@@ -149,13 +142,13 @@ contract RentalityView is UUPSUpgradeable, Initializable {
   /// @param tripId The ID of the trip.
   /// @return Trip information.
   function getTrip(uint256 tripId) public view returns (Schemas.TripDTO memory) {
-    return RentalityTripsQuery.getTripDTO(addresses, insuranceService, tripId);
+    return RentalityTripsQuery.getTripDTO(addresses, tripId);
   }
 
   /// @notice Retrieves information about trips where the caller is the guest.
   /// @return An array of trip information.
   function getTripsAs(bool host) public view returns (Schemas.TripDTO[] memory) {
-    return RentalityTripsQuery.getTripsAs(addresses, insuranceService, tx.origin, host);
+    return RentalityTripsQuery.getTripsAs(addresses, tx.origin, host);
   }
 
   /// @notice Retrieves information about trips where the caller is the host.
@@ -278,8 +271,7 @@ contract RentalityView is UUPSUpgradeable, Initializable {
         daysOfTrip,
         currency,
         pickUpLocation,
-        returnLocation,
-        insuranceService
+        returnLocation
         // refferalService,
         // useRefferalDiscount
       );
@@ -334,17 +326,11 @@ contract RentalityView is UUPSUpgradeable, Initializable {
   function getMyFullKYCInfo() public view returns (Schemas.FullKYCInfoDTO memory) {
     return addresses.userService.getMyFullKYCInfo();
   }
-  function getInsurancesBy(bool host) public view returns (Schemas.InsuranceDTO[] memory) {
-    return RentalityTripsQuery.getTripInsurancesBy(host, addresses, insuranceService, tx.origin);
-  }
 
   function calculateClaimValue(uint claimdId) public view returns (uint) {
     return RentalityQuery.calculateClaimValue(addresses, claimdId);
   }
 
-  function getMyInsurancesAsGuest() public view returns (Schemas.InsuranceInfo[] memory) {
-    return insuranceService.getMyInsurancesAsGuest(tx.origin);
-  }
 
   function initialize(
     address carServiceAddress,
@@ -354,7 +340,6 @@ contract RentalityView is UUPSUpgradeable, Initializable {
     address paymentServiceAddress,
     address claimServiceAddress,
     address carDeliveryAddress,
-    address insuranceAddress,
     address refferalProgramAddress
   ) public initializer {
     addresses = RentalityContract(
@@ -369,7 +354,6 @@ contract RentalityView is UUPSUpgradeable, Initializable {
       RentalityCarDelivery(carDeliveryAddress),
       this
     );
-    insuranceService = RentalityInsurance(insuranceAddress);
     refferalService = RentalityReferralProgram(refferalProgramAddress);
   }
 

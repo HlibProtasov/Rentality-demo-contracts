@@ -201,8 +201,6 @@ contract RentalityTripService is Initializable, UUPSUpgradeable {
   ///   - panelParams[0]: Fuel level (e.g., as a percentage)
   ///   - panelParams[1]: Odometer reading (e.g., in kilometers or miles)
   ///   - Additional parameters can be added based on the engine and vehicle characteristics.
-  /// @param insuranceCompany The name of the insurance company covering the vehicle.
-  /// @param insuranceNumber The insurance policy number.
   function checkInByHost(
     uint256 tripId,
     uint64[] memory panelParams,

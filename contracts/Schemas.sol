@@ -60,10 +60,9 @@ interface Schemas {
     uint64 milesIncludedPerDay;
     uint32 timeBufferBetweenTripsInSec;
     string geoApiKey;
+    bool insuranceIncluded;
     SignedLocationInfo locationInfo;
     bool currentlyListed;
-    bool insuranceRequired;
-    uint insurancePriceInUsdCents;
   }
 
   /// @notice Struct to store input parameters for updating car information.
@@ -75,8 +74,9 @@ interface Schemas {
     uint64 milesIncludedPerDay;
     uint32 timeBufferBetweenTripsInSec;
     bool currentlyListed;
-    bool insuranceRequired;
-    uint insurancePriceInUsdCents;
+    bool insuranceIncluded;
+    uint8 engineType;
+    string tokenUri;
   }
 
   /// @notice Struct to store search parameters for querying cars.
@@ -190,8 +190,6 @@ interface Schemas {
     LocationInfo returnLocation;
     string guestPhoneNumber;
     string hostPhoneNumber;
-    InsuranceInfo[] insurancesInfo;
-    uint paidForInsuranceInUsdCents;
   }
 
   /// CHAT LOGIC
@@ -356,7 +354,6 @@ interface Schemas {
     uint64 endFuelLevel;
     uint64 startOdometer;
     uint64 endOdometer;
-    uint insuranceFee;
   }
 
   struct CalculatePaymentsDTO {
@@ -425,7 +422,6 @@ interface Schemas {
     uint64 dropOf;
     bool insuranceIncluded;
     LocationInfo locationInfo;
-    InsuranceCarInfo insuranceInfo;
   }
 
   struct GeoData {
@@ -454,6 +450,7 @@ interface Schemas {
     bool geoVerified;
     bool currentlyListed;
     LocationInfo locationInfo;
+    string carVinNumber;
   }
 
   // Taxes
@@ -576,131 +573,88 @@ interface Schemas {
     Admin,
     KYCManager
   }
+    enum RefferalProgram {
+        SetKYC,
+        PassCivic,
+        AddFirstCar,
+        AddCar,
+        CreateTrip,
+        FinishTripAsHost,
+        FinishTripAsGuest,
+        UnlistedCar,
+        Daily,
+        DailyListing
+    }
 
-  /// Insurance Info
-  struct InsuranceCarInfo {
-    bool required;
-    uint priceInUsdCents;
-  }
+    enum Tear {
+        Tear1,
+        Tear2,
+        Tear3,
+        Tear4
+    }
+    enum RefferalAccrualType {
+        OneTime,
+        Permanent
+    }
 
-  struct SaveInsuranceRequest {
-    string companyName;
-    string policyNumber;
-    string photo;
-    string comment;
-    InsuranceType insuranceType;
-  }
+    struct ReadyToClaim {
+        uint points;
+        RefferalProgram refType;
+        bool oneTime;
+    }
+    struct ReadyToClaimRefferalHash {
+        uint points;
+        RefferalProgram refType;
+        bool oneTime;
+        bool claimed;
+    }
+    struct TearPoints {
+        uint from;
+        uint to;
+    }
 
-  struct InsuranceInfo {
-    string companyName;
-    string policyNumber;
-    string photo;
-    string comment;
-    InsuranceType insuranceType;
-    uint createdTime;
-    address createdBy;
-  }
-  enum InsuranceType {
-    None,
-    General,
-    OneTime
-  }
-  struct InsuranceDTO {
-    uint tripId;
-    string carBrand;
-    string carModel;
-    uint32 carYear;
-    InsuranceInfo insuranceInfo;
-    bool createdByHost;
-    string creatorPhoneNumber;
-    string creatorFullName;
-  }
-  struct CarInfoWithInsurance {
-    CarInfo carInfo;
-    InsuranceCarInfo insuranceInfo;
-  }
-  enum RefferalProgram {
-    SetKYC,
-    PassCivic,
-    AddFirstCar,
-    AddCar,
-    CreateTrip,
-    FinishTripAsHost,
-    FinishTripAsGuest,
-    UnlistedCar,
-    Daily,
-    DailyListing
-  }
+    struct RefferalDiscount {
+        uint pointsCosts;
+        uint percents;
+    }
 
-  enum Tear {
-    Tear1,
-    Tear2,
-    Tear3,
-    Tear4
-  }
-  enum RefferalAccrualType {
-    OneTime,
-    Permanent
-  }
+    struct TearDTO {
+        TearPoints points;
+        Tear tear;
+    }
 
-  struct ReadyToClaim {
-    uint points;
-    RefferalProgram refType;
-    bool oneTime;
-  }
-  struct ReadyToClaimRefferalHash {
-    uint points;
-    RefferalProgram refType;
-    bool oneTime;
-    bool claimed;
-  }
-  struct TearPoints {
-    uint from;
-    uint to;
-  }
+    struct ReadyToClaimDTO {
+        ReadyToClaim[] toClaim;
+        uint totalPoints;
+        uint toNextDailyClaim;
+    }
+    struct RefferalHashDTO {
+        ReadyToClaimRefferalHash[] toClaim;
+        uint totalPoints;
+        bytes32 hash;
+    }
 
-  struct RefferalDiscount {
-    uint pointsCosts;
-    uint percents;
-  }
+    /// admin panel ref program info
+    struct RefferalProgramInfoDTO {
+        RefferalAccrualType refferalType;
+        RefferalProgram method;
+        int points;
+    }
 
-  struct TearDTO {
-    TearPoints points;
-    Tear tear;
-  }
+    struct HashPointsDTO {
+        RefferalProgram method;
+        uint points;
+    }
+    struct RefferalDiscountsDTO {
+        RefferalProgram method;
+        Tear tear;
+        RefferalDiscount discount;
+    }
 
-  struct ReadyToClaimDTO {
-    ReadyToClaim[] toClaim;
-    uint totalPoints;
-    uint toNextDailyClaim;
-  }
-  struct RefferalHashDTO {
-    ReadyToClaimRefferalHash[] toClaim;
-    uint totalPoints;
-    bytes32 hash;
-  }
-
-  /// admin panel ref program info
-  struct RefferalProgramInfoDTO {
-    RefferalAccrualType refferalType;
-    RefferalProgram method;
-    int points;
-  }
-
-  struct HashPointsDTO {
-    RefferalProgram method;
-    uint points;
-  }
-  struct RefferalDiscountsDTO {
-    RefferalProgram method;
-    Tear tear;
-    RefferalDiscount discount;
-  }
-
-  struct AllRefferalInfoDTO {
-    RefferalProgramInfoDTO[] programPoints;
-    HashPointsDTO[] hashPoints;
-    RefferalDiscountsDTO[] discounts;
-    TearDTO[] tear;
-  }
+    struct AllRefferalInfoDTO {
+        RefferalProgramInfoDTO[] programPoints;
+        HashPointsDTO[] hashPoints;
+        RefferalDiscountsDTO[] discounts;
+        TearDTO[] tear;
+    }
 }

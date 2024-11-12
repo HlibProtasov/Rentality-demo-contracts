@@ -85,16 +85,6 @@ describe('Ability to update car during trip', function () {
           startDateTime: Date.now(),
           endDateTime: Date.now() + 85600,
           currencyType: ethToken,
-          insurancePaid: false,
-          photo: '',
-          pickUpInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
-          returnInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
         },
         { value: result.totalPrice }
       )
@@ -135,16 +125,6 @@ describe('Ability to update car during trip', function () {
           startDateTime: Date.now(),
           endDateTime: Date.now() + 84700,
           currencyType: ethToken,
-          insurancePaid: false,
-          photo: '',
-          pickUpInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
-          returnInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
         },
         { value: result.totalPrice }
       )
@@ -158,12 +138,13 @@ describe('Ability to update car during trip', function () {
       carId: 1,
       pricePerDayInUsdCents: 2,
       securityDepositPerTripInUsdCents: 2,
-      engineParams: [2],
+      engineParams: [2,2],
       milesIncludedPerDay: 2,
       timeBufferBetweenTripsInSec: 2,
       currentlyListed: false,
-      insuranceRequired: false,
-      insurancePriceInUsdCents: 0,
+      insuranceIncluded: true,
+      engineType: 1,
+      tokenUri: 'uri'
     }
 
     let locationInfo = {
@@ -207,16 +188,6 @@ describe('Ability to update car during trip', function () {
           startDateTime: Date.now(),
           endDateTime: Date.now() + 84500,
           currencyType: ethToken,
-          insurancePaid: false,
-          photo: '',
-          pickUpInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
-          returnInfo: {
-            signature: guest.address,
-            locationInfo: emptyLocationInfo,
-          },
         },
         { value: result.totalPrice }
       )
