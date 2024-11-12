@@ -225,8 +225,7 @@ describe('RentalityGateway: trips', function () {
       insuranceIncluded: true,
       locationInfo: locationInfo1,
       currentlyListed: true,
-      insuranceRequired: false,
-      insurancePriceInUsdCents: 0,
+   
     }
     await expect(rentalityGateway.connect(host).addCar(mockCreateCarRequest, zeroHash)).not.to.be.reverted
     const dailyPriceInUsdCents = 1000
@@ -269,8 +268,7 @@ describe('RentalityGateway: trips', function () {
       insuranceIncluded: true,
       locationInfo: locationInfo1,
       currentlyListed: true,
-      insuranceRequired: false,
-      insurancePriceInUsdCents: 0,
+   
     }
 
     await expect(rentalityGateway.connect(host).addCar(mockPatrolCreateCarRequest, zeroHash)).not.to.be.reverted

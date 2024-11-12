@@ -182,8 +182,7 @@ describe('Referral program', function () {
       milesIncludedPerDay: 2,
       timeBufferBetweenTripsInSec: 2,
       currentlyListed: false,
-      insuranceRequired: false,
-      insurancePriceInUsdCents: 0,
+   
     }
 
     let locationInfo = {

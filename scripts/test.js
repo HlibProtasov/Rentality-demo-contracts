@@ -5,7 +5,8 @@ const { startDeploy } = require('./utils/deployHelper')
 const { emptyLocationInfo, getEmptySearchCarParams } = require('../test/utils')
 
 async function main() {
-  let contract = await ethers.getContractAt('')
+  let contract = await ethers.getContractAt('IRentalityGateway','0xB257FE9D206b60882691a24d5dfF8Aa24929cB73')
+  await contract.getMyCars()
 }
 
 main()
