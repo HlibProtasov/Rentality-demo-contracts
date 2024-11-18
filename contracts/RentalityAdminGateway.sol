@@ -396,7 +396,6 @@ contract RentalityAdminGateway is UUPSOwnable, IRentalityAdminGateway {
     address claimServiceAddress,
     address carDeliveryAddress,
     address viewServiceAddress,
-    address insuranceServiceAddress,
     address refferalProgramAddress
   ) public initializer {
     carService = RentalityCarToken(carServiceAddress);

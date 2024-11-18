@@ -657,4 +657,8 @@ interface Schemas {
         RefferalDiscountsDTO[] discounts;
         TearDTO[] tear;
     }
+    struct RefferalHistory {
+      int points;
+      RefferalProgram method;
+    }
 }

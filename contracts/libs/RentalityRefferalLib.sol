@@ -71,7 +71,7 @@ library RentalityRefferalLib {
 
   function formatReadyToClaim(
     Schemas.ReadyToClaimDTO memory toClaim
-  ) public view returns (Schemas.ReadyToClaimDTO memory) {
+  ) public pure returns (Schemas.ReadyToClaimDTO memory) {
     Schemas.ReadyToClaim[] memory claim = new Schemas.ReadyToClaim[](uint(type(Schemas.RefferalProgram).max));
     for (uint i = 0; i < uint(type(Schemas.RefferalProgram).max); i++) {
       claim[i].refType = Schemas.RefferalProgram(i);

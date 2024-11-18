@@ -135,7 +135,7 @@ contract RentalityPlatform is UUPSOwnable {
 
     addresses.paymentService.payCreateTrip{value: msg.value}(currencyType, valueSumInCurrency);
 
-    uint tripId = addresses.tripService.createNewTrip(
+  addresses.tripService.createNewTrip(
       carId,
       tx.origin,
       addresses.carService.ownerOf(carId),

@@ -66,7 +66,6 @@ abstract contract ARentalityRefferalPointsSetter is ARentalityRefferal {
   ) internal returns (int, bool) {
     Points memory points = selectorToPoints[selector];
 
-    int result = 0;
     bool isOneTime = true;
     if (points.points != 0) {
       bool passed = selectorToPassedAddress[selector][user];
