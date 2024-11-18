@@ -218,6 +218,7 @@ describe('Rentality Delivery', function () {
       geoApiKey: 'key',
       locationInfo: locationInfo1,
       currentlyListed: true,
+      insuranceIncluded: true
    
     }
 

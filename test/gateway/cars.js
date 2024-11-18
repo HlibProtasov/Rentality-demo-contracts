@@ -115,13 +115,13 @@ describe('RentalityGateway: car', function () {
       carId: 1,
       pricePerDayInUsdCents: 2,
       securityDepositPerTripInUsdCents: 2,
-      engineParams: [2,2],
+      engineParams: [2, 2],
       milesIncludedPerDay: 2,
       timeBufferBetweenTripsInSec: 2,
       currentlyListed: false,
       insuranceIncluded: true,
       engineType: 1,
-      tokenUri: "uri"
+      tokenUri: 'uri',
     }
     let locationInfo = {
       locationInfo: emptyLocationInfo,
@@ -136,11 +136,11 @@ describe('RentalityGateway: car', function () {
 
     let carInfo = await rentalityGateway.getCarInfoById(update_params.carId)
 
-    expect(carInfo.carInfo.currentlyListed).to.be.equal(false)
-    expect(carInfo.carInfo.pricePerDayInUsdCents).to.be.equal(update_params.pricePerDayInUsdCents)
-    expect(carInfo.carInfo.milesIncludedPerDay).to.be.equal(update_params.milesIncludedPerDay)
-    expect(carInfo.carInfo.engineParams[1]).to.be.equal(update_params.engineParams[0])
-    expect(carInfo.carInfo.securityDepositPerTripInUsdCents).to.be.equal(update_params.securityDepositPerTripInUsdCents)
+    expect(carInfo.currentlyListed).to.be.equal(false)
+    expect(carInfo.pricePerDayInUsdCents).to.be.equal(update_params.pricePerDayInUsdCents)
+    expect(carInfo.milesIncludedPerDay).to.be.equal(update_params.milesIncludedPerDay)
+    expect(carInfo.engineParams[1]).to.be.equal(update_params.engineParams[0])
+    expect(carInfo.securityDepositPerTripInUsdCents).to.be.equal(update_params.securityDepositPerTripInUsdCents)
   })
 
   it('should have cars owned by user', async function () {

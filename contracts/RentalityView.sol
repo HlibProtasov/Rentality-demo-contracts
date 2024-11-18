@@ -331,6 +331,11 @@ contract RentalityView is UUPSUpgradeable, Initializable {
     return RentalityQuery.calculateClaimValue(addresses, claimdId);
   }
 
+   function getFilterInfo(uint64 duration) public view returns (Schemas.FilterInfoDTO memory) {
+    return RentalityTripsQuery.getFilterInfo(addresses, duration);
+  }
+
+
 
   function initialize(
     address carServiceAddress,

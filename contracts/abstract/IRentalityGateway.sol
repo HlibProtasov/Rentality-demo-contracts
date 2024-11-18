@@ -330,8 +330,14 @@ interface IRentalityGateway {
   /// @return An array of car information.
   function getAllCars() external view returns (Schemas.CarInfo[] memory);
 
-  /// @notice Retrieves information about available cars for a specific user.
-  /// @param user The address of the user.
+
+
+  // function updateCarTokenUri(uint256 carId, string memory tokenUri) external;
+  /// @notice Retrieves additional filter information based on the duration of the trip
+  /// @param duration The total number of days for the car rental
+  /// @return Schemas.FilterInfoDTO A data structure containing additional filter information, optimized for the specified rental duration
+  function getFilterInfo(uint64 duration) external view returns (Schemas.FilterInfoDTO memory);
   /// @return An array of available car information for the specified user.
   function getAvailableCarsForUser(address user) external view returns (Schemas.CarInfo[] memory);
+
 }

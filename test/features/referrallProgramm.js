@@ -131,13 +131,14 @@ describe('Referral program', function () {
     expect(await refferalProgram.addressToPoints(hashCreator.address)).to.be.eq(260)
   })
   it('update car should deacrease points', async function () {
+  
     expect(await refferalProgram.connect(hashCreator).generateReferralHash()).to.not.reverted
-
+   
     let hash = await refferalProgram.referralHash(hashCreator.address)
 
     expect(await rentalityGateway.connect(anonymous).setKYCInfo(' ', ' ', ' ', signTCMessage(anonymous), hash)).to.not
       .reverted
-
+      
     const readyToClaim = await refferalProgram.getReadyToClaim(anonymous.address)
 
     const amount = readyToClaim.toClaim.find((obj) => obj.refType === BigInt(RefferalProgram.SetKYC)).points
@@ -154,7 +155,7 @@ describe('Referral program', function () {
         .connect(anonymous)
         .addCar(getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin), hash)
     ).to.not.reverted
-
+  
     const hashPointsCar = await refferalProgram.getReadyToClaimFromRefferalHash(hashCreator.address)
     const hashCreatorPointsCar = hashPointsCar.toClaim.find(
       (obj) => obj.refType === BigInt(RefferalProgram.AddCar)
@@ -168,7 +169,7 @@ describe('Referral program', function () {
 
     expect(amountCar).to.be.eq(2000)
     await expect(refferalProgram.claimPoints(anonymous.address)).to.not.reverted
-
+    
     await expect(refferalProgram.claimRefferalPoints(hashCreator.address)).to.not.reverted
 
     expect(await refferalProgram.addressToPoints(anonymous.address)).to.be.eq(2145)
@@ -178,11 +179,13 @@ describe('Referral program', function () {
       carId: 1,
       pricePerDayInUsdCents: 2,
       securityDepositPerTripInUsdCents: 2,
-      engineParams: [2],
+      engineParams: [2,2],
+      timeBufferBetweenTripsInSec: 0,
       milesIncludedPerDay: 2,
-      timeBufferBetweenTripsInSec: 2,
       currentlyListed: false,
-   
+      insuranceIncluded: true,
+      engineType: 1,
+      tokenUri: ""
     }
 
     let locationInfo = {
@@ -193,10 +196,8 @@ describe('Referral program', function () {
       .reverted
 
     expect(await refferalProgram.addressToPoints(anonymous.address)).to.be.eq(1645)
-
     await expect(rentalityGateway.connect(anonymous).updateCarInfoWithLocation(update_params, locationInfo)).to.not
       .reverted
-
     expect(await refferalProgram.addressToPoints(anonymous.address)).to.be.eq(1645)
   })
   it('should be able to pass civic with referral code', async function () {

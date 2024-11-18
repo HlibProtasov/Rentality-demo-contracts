@@ -661,4 +661,18 @@ interface Schemas {
       int points;
       RefferalProgram method;
     }
+  enum CarUpdateStatus {
+    Add,
+    Update,
+    Burn
+  }
+  enum EventType {
+    Car,
+    Claim,
+    Trip
+  }
+   struct FilterInfoDTO {
+    uint64 maxCarPrice;
+    uint minCarYearOfProduction;
+  }
 }

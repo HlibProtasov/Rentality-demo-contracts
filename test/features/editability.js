@@ -138,13 +138,13 @@ describe('Ability to update car during trip', function () {
       carId: 1,
       pricePerDayInUsdCents: 2,
       securityDepositPerTripInUsdCents: 2,
-      engineParams: [2,2],
+      engineParams: [2, 2],
       milesIncludedPerDay: 2,
       timeBufferBetweenTripsInSec: 2,
       currentlyListed: false,
       insuranceIncluded: true,
       engineType: 1,
-      tokenUri: 'uri'
+      tokenUri: 'uri',
     }
 
     let locationInfo = {

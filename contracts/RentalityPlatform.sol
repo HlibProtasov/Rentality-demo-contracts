@@ -398,7 +398,6 @@ contract RentalityPlatform is UUPSOwnable {
     addresses.deliveryService.setUserDeliveryPrices(underTwentyFiveMilesInUsdCents, aboveTwentyFiveMilesInUsdCents);
   }
 
-
   // function updateCarTokenUri(uint256 carId, string memory tokenUri) public {
   // addresses.carService.updateCarTokenUri(carId,tokenUri);
   // }

@@ -1,5 +1,4 @@
 const RentalityGatewayJSON_ABI = require('../src/abis/RentalityGateway.v0_2_0.abi.json')
-const RentalityChatHelperJSON_ABI = require('../src/abis/RentalityChatHelper.v0_2_0.abi.json')
 const testData = require('./testData/testData.json')
 const { ethers, network } = require('hardhat')
 const { buildPath } = require('./utils/pathBuilder')
@@ -23,11 +22,6 @@ const checkInitialization = async () => {
   const rentalityGatewayAddress = checkNotNull(addresses['RentalityGateway'], 'rentalityGatewayAddress')
   if (!rentalityGatewayAddress) {
     throw new Error(`Addresses for RentalityGateway was not found`)
-  }
-
-  const chatHelperAddress = checkNotNull(addresses['RentalityChatHelper'], 'chatHelperAddress')
-  if (!chatHelperAddress) {
-    throw new Error(`Addresses for RentalityChatHelper was not found`)
   }
 
   const verifierAddress = checkNotNull(addresses['RentalityLocationVerifier'], 'verifierAddress')
@@ -84,9 +78,8 @@ const checkInitialization = async () => {
   }
 
   const gateway = new ethers.Contract(rentalityGatewayAddress, RentalityGatewayJSON_ABI.abi, deployer)
-  const chatService = new ethers.Contract(chatHelperAddress, RentalityChatHelperJSON_ABI.abi, deployer)
 
-  return [host, guest, kycManager, admin, gateway, chatService, verifierAddress]
+  return [host, guest, kycManager, admin, gateway, verifierAddress]
 }
 
 async function signLocationInfo(signer, verifierAddress, locationInfo) {
@@ -114,7 +107,7 @@ async function signLocationInfo(signer, verifierAddress, locationInfo) {
   return signer.signTypedData(domain, types, locationInfo)
 }
 
-async function setHostKycIfNotSet(host, kycManager, gateway, chatService) {
+async function setHostKycIfNotSet(host, kycManager, gateway) {
   console.log('\nSetting KYC for host...')
 
   const kyc = (await gateway.connect(host).getMyFullKYCInfo()).kyc
@@ -143,7 +136,7 @@ async function setHostKycIfNotSet(host, kycManager, gateway, chatService) {
   }
 }
 
-async function setGuestKycIfNotSet(guest, kycManager, gateway, chatService) {
+async function setGuestKycIfNotSet(guest, kycManager, gateway) {
   console.log('\nSetting KYC for guest...')
 
   const kyc = (await gateway.connect(guest).getMyFullKYCInfo()).kyc
@@ -204,23 +197,12 @@ async function setCarsForHost(host, admin, verifierAddress, gateway) {
 }
 
 async function getTripCount(host, gateway) {
-  return (await gateway.connect(host).getTripsAs(true)).length
+  return (await gateway.connect(host).getTripsAsHost()).length
 }
 
 async function createPendingTrip(tripIndex, carId, host, guest, gateway) {
   const ethAddress = ethers.getAddress('0x0000000000000000000000000000000000000000')
-  const emptyContractLocationInfo = {
-    userAddress: '',
-    country: '',
-    state: '',
-    city: '',
-    latitude: '',
-    longitude: '',
-    timeZoneId: '',
-  }
-  const paymentsNeeded = await gateway
-    .connect(guest)
-    .calculatePaymentsWithDelivery(carId, 1, ethAddress, emptyContractLocationInfo, emptyContractLocationInfo)
+  const paymentsNeeded = await gateway.connect(guest).calculatePayments(carId, 1, ethAddress)
   const request = {
     carId: carId,
     startDateTime: Math.ceil(new Date().getTime() / 1000 + tripIndex * 3),
@@ -231,7 +213,7 @@ async function createPendingTrip(tripIndex, carId, host, guest, gateway) {
     value: paymentsNeeded.totalPrice,
   })
 
-  const trips = await gateway.connect(guest).getTripsAs(false)
+  const trips = await gateway.connect(guest).getTripsAsGuest()
   const tripId = trips[trips.length - 1]?.trip?.tripId ?? -1
   console.log(`\nTrip #${tripIndex} was created with id ${tripId} and status 'Pending'`)
   return tripId
@@ -350,10 +332,10 @@ async function createConfirmedAfterCompletedWithoutGuestComfirmationTrip(tripInd
 }
 
 async function main() {
-  const [host, guest, kycManager, admin, gateway, chatService, verifierAddress] = await checkInitialization()
+  const [host, guest, kycManager, admin, gateway, verifierAddress] = await checkInitialization()
 
-  await setHostKycIfNotSet(host, kycManager, gateway, chatService)
-  await setGuestKycIfNotSet(guest, kycManager, gateway, chatService)
+  await setHostKycIfNotSet(host, kycManager, gateway)
+  await setGuestKycIfNotSet(guest, kycManager, gateway)
 
   const carIds = await setCarsForHost(host, admin, verifierAddress, gateway)
   let tripCount = await getTripCount(host, gateway)

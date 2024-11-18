@@ -53,6 +53,12 @@ async function deployDefaultFixture() {
 
   const rentalityUserService = await upgrades.deployProxy(RentalityUserService, [await mockCivic.getAddress(), 0])
 
+  const RentalityNotificationService = await ethers.getContractFactory('RentalityNotificationService')
+
+  const rentalityNotificationService = await upgrades.deployProxy(RentalityNotificationService, [
+    await rentalityUserService.getAddress(),
+  ])
+  await rentalityNotificationService.waitForDeployment()
   const electricEngine = await ethers.getContractFactory('RentalityElectricEngine')
   const elEngine = await electricEngine.deploy(await rentalityUserService.getAddress())
   await elEngine.waitForDeployment()
@@ -119,6 +125,7 @@ async function deployDefaultFixture() {
     await rentalityGeoService.getAddress(),
     await engineService.getAddress(),
     await rentalityUserService.getAddress(),
+    await rentalityNotificationService.getAddress(),
   ])
 
   await rentalityCarToken.waitForDeployment()
@@ -165,11 +172,15 @@ async function deployDefaultFixture() {
     await rentalityPaymentService.getAddress(),
     await rentalityUserService.getAddress(),
     await engineService.getAddress(),
+    await rentalityNotificationService.getAddress(),
   ])
 
   await rentalityTripService.waitForDeployment()
   const RentalityClaimService = await ethers.getContractFactory('RentalityClaimService')
-  const claimService = await upgrades.deployProxy(RentalityClaimService, [await rentalityUserService.getAddress()])
+  const claimService = await upgrades.deployProxy(RentalityClaimService, [
+    await rentalityUserService.getAddress(),
+    await rentalityNotificationService.getAddress(),
+  ])
   await claimService.waitForDeployment()
 
   const RealMath = await ethers.getContractFactory('RealMath')
