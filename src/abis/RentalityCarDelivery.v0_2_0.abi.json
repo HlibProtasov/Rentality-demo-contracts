@@ -224,14 +224,6 @@
                 { "type": "string", "name": "longitude" },
                 { "type": "string", "name": "timeZoneId" }
               ]
-            },
-            {
-              "type": "tuple",
-              "name": "insuranceInfo",
-              "components": [
-                { "type": "bool", "name": "required" },
-                { "type": "uint256", "name": "priceInUsdCents" }
-              ]
             }
           ]
         },
@@ -290,14 +282,6 @@
                     { "type": "string", "name": "latitude" },
                     { "type": "string", "name": "longitude" },
                     { "type": "string", "name": "timeZoneId" }
-                  ]
-                },
-                {
-                  "type": "tuple",
-                  "name": "insuranceInfo",
-                  "components": [
-                    { "type": "bool", "name": "required" },
-                    { "type": "uint256", "name": "priceInUsdCents" }
                   ]
                 }
               ]

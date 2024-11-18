@@ -240,6 +240,9 @@ contract RentalityReferralProgram is
     }
     return Schemas.AllRefferalInfoDTO(refferalPoints, hashPoints, discounts, getAllTearsInfo());
   }
+  function getPointsHistory() public view returns(Schemas.RefferalHistory [] memory) {
+    return userPointsHistory[msg.sender];
+  }
 
   function initialize(
     address _userService,
