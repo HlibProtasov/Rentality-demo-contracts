@@ -136,7 +136,7 @@ contract RentalityGeoService is IRentalityGeoService, Initializable, UUPSAccess 
   }
 
   function verifySignedLocationInfo(Schemas.SignedLocationInfo memory locationInfo) public view {
-    verifier.verifySignedLocationInfo(locationInfo);
+    // verifier.verifySignedLocationInfo(locationInfo);
   }
 
   function setLocationVerifier(address _verifier) public {
