@@ -660,6 +660,14 @@ interface Schemas {
     struct RefferalHistory {
       int points;
       RefferalProgram method;
+    
+    }
+
+    struct History {
+      int points;
+      uint date;
+      RefferalProgram method;
+    
     }
   enum CarUpdateStatus {
     Add,

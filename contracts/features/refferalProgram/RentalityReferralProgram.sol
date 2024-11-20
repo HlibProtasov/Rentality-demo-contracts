@@ -34,8 +34,9 @@ contract RentalityReferralProgram is
   mapping(address => Schemas.ReadyToClaim[]) private addressToReadyToClaim;
   mapping(address => Schemas.ReadyToClaimRefferalHash[]) private addressToReadyToClaimFromHash;
   mapping(uint => uint) private carIdToDailyClaimed;
-  mapping(address => Schemas.RefferalHistory[]) private userPointsHistory;
+  mapping(address => Schemas.RefferalHistory[]) private userPointsHistory; // unused
   RentalityCarToken private carService;
+ mapping(address => Schemas.History[]) private userHistory;
 
   function getCarDailyClaimedTime(uint carId) public view returns (uint) {
     return carIdToDailyClaimed[carId];
@@ -67,7 +68,7 @@ contract RentalityReferralProgram is
       uint pointsToReduce = uint(-points);
       if (addressToPoints[user] < pointsToReduce) addressToPoints[user] = 0;
       else addressToPoints[user] -= pointsToReduce;
-          userPointsHistory[user].push(Schemas.RefferalHistory(points, selector));
+          userHistory[user].push(Schemas.History(points, block.timestamp, selector));
     }
   }
 
@@ -101,7 +102,7 @@ contract RentalityReferralProgram is
       uint total = 0;
       for (uint i = 0; i < toClaim.length; i++) {
         total += toClaim[i].points;
-        userPointsHistory[user].push(Schemas.RefferalHistory(int(toClaim[i].points), toClaim[i].refType));
+        userHistory[user].push(Schemas.History(int(toClaim[i].points), block.timestamp, toClaim[i].refType));
       }
       total += updateDaily();
       (uint dailiListingPoints, uint[] memory cars) = RentalityRefferalLib.calculateListedCarsPoints(
@@ -240,8 +241,8 @@ contract RentalityReferralProgram is
     }
     return Schemas.AllRefferalInfoDTO(refferalPoints, hashPoints, discounts, getAllTearsInfo());
   }
-  function getPointsHistory() public view returns(Schemas.RefferalHistory [] memory) {
-    return userPointsHistory[msg.sender];
+  function getPointsHistory() public view returns(Schemas.History [] memory) {
+    return userHistory[msg.sender];
   }
 
   function initialize(
