@@ -608,6 +608,14 @@ interface Schemas {
         bool oneTime;
         bool claimed;
     }
+
+    struct ReadyToClaimFromHash {
+        uint points;
+        RefferalProgram refType;
+        bool oneTime;
+        bool claimed;
+        address user;
+    }
     struct TearPoints {
         uint from;
         uint to;
@@ -629,7 +637,7 @@ interface Schemas {
         uint toNextDailyClaim;
     }
     struct RefferalHashDTO {
-        ReadyToClaimRefferalHash[] toClaim;
+        ReadyToClaimFromHash[] toClaim;
         uint totalPoints;
         bytes32 hash;
     }
@@ -667,7 +675,13 @@ interface Schemas {
       int points;
       uint date;
       RefferalProgram method;
-    
+    }
+
+     struct ProgramHistory {
+      int points;
+      uint date;
+      RefferalProgram method;
+      bool oneTime;
     }
   enum CarUpdateStatus {
     Add,

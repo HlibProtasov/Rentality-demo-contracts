@@ -32,11 +32,17 @@ contract RentalityReferralProgram is
   mapping(address => uint) public addressToPoints;
   mapping(uint => TripDiscounts) private tripIdToDisctount;
   mapping(address => Schemas.ReadyToClaim[]) private addressToReadyToClaim;
-  mapping(address => Schemas.ReadyToClaimRefferalHash[]) private addressToReadyToClaimFromHash;
+  mapping(address => Schemas.ReadyToClaimRefferalHash[]) private addressToReadyToClaimFromHash; //unused
   mapping(uint => uint) private carIdToDailyClaimed;
   mapping(address => Schemas.RefferalHistory[]) private userPointsHistory; // unused
   RentalityCarToken private carService;
- mapping(address => Schemas.History[]) private userHistory;
+ mapping(address => Schemas.History[]) private userHistory; // unused
+
+  mapping(address => Schemas.ProgramHistory[]) private userProgramHistory;
+
+  
+  mapping(address => Schemas.ReadyToClaimFromHash[]) private userToReadyToClaimFromHash;
+
 
   function getCarDailyClaimedTime(uint carId) public view returns (uint) {
     return carIdToDailyClaimed[carId];
@@ -58,8 +64,8 @@ contract RentalityReferralProgram is
     (int points, bool isOneTime) = _setPassedIfExists(selector, callbackArgs, owner != address(0), user);
     if (points > 0) {
       if (isOneTime && hashPoints > 0) {
-        addressToReadyToClaimFromHash[owner].push(
-          Schemas.ReadyToClaimRefferalHash(uint(hashPoints), selector, isOneTime, false)
+        userToReadyToClaimFromHash[owner].push(
+          Schemas.ReadyToClaimFromHash(uint(hashPoints), selector, isOneTime, false, user)
         );
       }
 
@@ -68,7 +74,7 @@ contract RentalityReferralProgram is
       uint pointsToReduce = uint(-points);
       if (addressToPoints[user] < pointsToReduce) addressToPoints[user] = 0;
       else addressToPoints[user] -= pointsToReduce;
-          userHistory[user].push(Schemas.History(points, block.timestamp, selector));
+         userProgramHistory[user].push(Schemas.ProgramHistory(points, block.timestamp, selector, isOneTime));
     }
   }
 
@@ -102,7 +108,7 @@ contract RentalityReferralProgram is
       uint total = 0;
       for (uint i = 0; i < toClaim.length; i++) {
         total += toClaim[i].points;
-        userHistory[user].push(Schemas.History(int(toClaim[i].points), block.timestamp, toClaim[i].refType));
+        userProgramHistory[user].push(Schemas.ProgramHistory(int(toClaim[i].points), block.timestamp, toClaim[i].refType, toClaim[i].oneTime));
       }
       total += updateDaily();
       (uint dailiListingPoints, uint[] memory cars) = RentalityRefferalLib.calculateListedCarsPoints(
@@ -161,7 +167,7 @@ contract RentalityReferralProgram is
   }
 
   function getReadyToClaimFromRefferalHash(address user) public view returns (Schemas.RefferalHashDTO memory) {
-    Schemas.ReadyToClaimRefferalHash[] memory availableToClaim = addressToReadyToClaimFromHash[user];
+    Schemas.ReadyToClaimFromHash[] memory availableToClaim = userToReadyToClaimFromHash[user];
     uint counter = 0;
     for (uint i = 0; i < availableToClaim.length; i++) {
       if (!availableToClaim[i].claimed) counter += availableToClaim[i].points;
@@ -171,13 +177,13 @@ contract RentalityReferralProgram is
   }
 
   function claimRefferalPoints(address user) public {
-    Schemas.ReadyToClaimRefferalHash[] memory availableToClaim = addressToReadyToClaimFromHash[user];
+    Schemas.ReadyToClaimFromHash[] memory availableToClaim = userToReadyToClaimFromHash[user];
     if (availableToClaim.length > 0) {
       uint total = 0;
       for (uint i = 0; i < availableToClaim.length; i++) {
         if (!availableToClaim[i].claimed) {
           total += availableToClaim[i].points;
-          addressToReadyToClaimFromHash[user][i].claimed = true;
+          userToReadyToClaimFromHash[user][i].claimed = true;
         }
       }
       addressToPoints[user] += total;
@@ -241,8 +247,8 @@ contract RentalityReferralProgram is
     }
     return Schemas.AllRefferalInfoDTO(refferalPoints, hashPoints, discounts, getAllTearsInfo());
   }
-  function getPointsHistory() public view returns(Schemas.History [] memory) {
-    return userHistory[msg.sender];
+  function getPointsHistory() public view returns(Schemas.ProgramHistory [] memory) {
+    return userProgramHistory[msg.sender];
   }
 
   function initialize(

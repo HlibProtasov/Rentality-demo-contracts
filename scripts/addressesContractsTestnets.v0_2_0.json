@@ -65,7 +65,9 @@
     "RentalityRefferalLib": "0xe399Bf78E2A31075c9FebFce8b44A48184e79148",
     "RentalityReferralProgram": "0x4c29f11D5d83F55570DCd38562A0906a5291f5a0",
     "RentalityView": "0x0da58Dc2Fed9756Db24d35967F4B75393bD86461",
-    "RentalityPlatform": "0x7e2D85C7143401722255c698dB111667cf3e49e2"
+    "RentalityPlatform": "0x7e2D85C7143401722255c698dB111667cf3e49e2",
+    "RentalityAdminGateway": "0xCB3A446A43F14dbd1484F7a73E46eDCe132D44A5",
+    "RentalityGateway": "0x3A190cFc2Fe7ED443e2C7B8338180Bb5327620f5"
   },
   {
     "name": "opBNB_testnet",
