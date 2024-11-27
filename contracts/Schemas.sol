@@ -578,7 +578,6 @@ interface Schemas {
         PassCivic,
         AddCar,
         CreateTrip,
-        FinishTripAsHost,
         FinishTripAsGuest,
         UnlistedCar,
         Daily,

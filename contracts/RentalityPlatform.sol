@@ -206,12 +206,7 @@ contract RentalityPlatform is UUPSOwnable {
   function _finishTrip(uint256 tripId, /* bool useRefferalDiscount,*/ bytes32 refferalHash) internal {
     addresses.tripService.finishTrip(tripId);
     Schemas.Trip memory trip = addresses.tripService.getTrip(tripId);
-    refferalProgram.passReferralProgram(
-      Schemas.RefferalProgram.FinishTripAsHost,
-      refferalHash,
-      abi.encode(trip.startDateTime, trip.endDateTime),
-      tx.origin
-    );
+
     // uint discount = 0;
     // if(useRefferalDiscount)
     //  discount = refferalProgram.useDiscount(Schemas.RefferalProgram.FinishTripAsHost, true, tripId);

@@ -259,11 +259,9 @@ contract RentalityReferralProgram is
     addOneTimeProgram(Schemas.RefferalProgram.SetKYC, 100, 125, bytes4(''));
     addOneTimeProgram(Schemas.RefferalProgram.PassCivic, 500, 625, bytes4(''));
     addOneTimeProgram(Schemas.RefferalProgram.AddCar, 1000, 2000, bytes4(''));
-    addOneTimeProgram(Schemas.RefferalProgram.FinishTripAsHost, 1000, 1250, bytes4(''));
     addOneTimeProgram(Schemas.RefferalProgram.FinishTripAsGuest, 1000, 1250, bytes4(''));
 
     addPermanentProgram(Schemas.RefferalProgram.AddCar, 500, bytes4(''));
-    addPermanentProgram(Schemas.RefferalProgram.FinishTripAsHost, 50, RentalityRefferalLib.finishTrip.selector);
     addPermanentProgram(Schemas.RefferalProgram.FinishTripAsGuest, 50, RentalityRefferalLib.finishTrip.selector);
     addPermanentProgram(Schemas.RefferalProgram.UnlistedCar, -500, RentalityRefferalLib.updateCar.selector);
     addPermanentProgram(Schemas.RefferalProgram.Daily, 20, RentalityRefferalLib.updateDaily.selector);
@@ -273,15 +271,12 @@ contract RentalityReferralProgram is
     manageRefHashesProgram(Schemas.RefferalProgram.PassCivic, 50);
     manageRefHashesProgram(Schemas.RefferalProgram.AddCar, 250);
     manageRefHashesProgram(Schemas.RefferalProgram.FinishTripAsGuest, 1000);
-    manageRefHashesProgram(Schemas.RefferalProgram.FinishTripAsHost, 1000);
 
     manageRefferalDiscount(Schemas.RefferalProgram.CreateTrip, Schemas.Tear.Tear2, 100, 2);
     manageRefferalDiscount(Schemas.RefferalProgram.CreateTrip, Schemas.Tear.Tear3, 150, 3);
     manageRefferalDiscount(Schemas.RefferalProgram.CreateTrip, Schemas.Tear.Tear4, 250, 5);
 
-    manageRefferalDiscount(Schemas.RefferalProgram.FinishTripAsHost, Schemas.Tear.Tear2, 100, 10);
-    manageRefferalDiscount(Schemas.RefferalProgram.FinishTripAsHost, Schemas.Tear.Tear3, 150, 15);
-    manageRefferalDiscount(Schemas.RefferalProgram.FinishTripAsHost, Schemas.Tear.Tear4, 250, 25);
+
     manageRefferalDiscount(Schemas.RefferalProgram.FinishTripAsGuest, Schemas.Tear.Tear2, 100, 10);
     manageRefferalDiscount(Schemas.RefferalProgram.FinishTripAsGuest, Schemas.Tear.Tear3, 150, 15);
     manageRefferalDiscount(Schemas.RefferalProgram.FinishTripAsGuest, Schemas.Tear.Tear4, 250, 25);
