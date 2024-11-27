@@ -39,6 +39,7 @@ contract RentalityPlatform is UUPSOwnable {
   function updateServiceAddresses(RentalityAdminGateway adminService) public {
     require(addresses.userService.isAdmin(tx.origin), 'only Admin.');
     addresses = adminService.getRentalityContracts();
+    refferalProgram = adminService.getRefferalServiceAddress();
   }
 
   //  function updateServiceAddresses(RentalityAdminGateway adminService) public {

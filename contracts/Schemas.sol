@@ -576,7 +576,6 @@ interface Schemas {
     enum RefferalProgram {
         SetKYC,
         PassCivic,
-        AddFirstCar,
         AddCar,
         CreateTrip,
         FinishTripAsHost,

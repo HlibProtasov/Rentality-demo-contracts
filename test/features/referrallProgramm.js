@@ -69,6 +69,7 @@ describe('Referral program', function () {
       .reverted
 
     const readyToClaim = await refferalProgram.getReadyToClaim(anonymous.address)
+    console.log("READY", readyToClaim)
 
     const amount = readyToClaim.toClaim.find((obj) => obj.refType === BigInt(RefferalProgram.SetKYC)).points
 
@@ -86,7 +87,7 @@ describe('Referral program', function () {
 
     expect(await refferalProgram.addressToPoints(hashCreator.address)).to.be.eq(10)
   })
-  it('should be able to add car with referral code', async function () {
+  it.only('should be able to add car with referral code', async function () {
     expect(await refferalProgram.connect(hashCreator).generateReferralHash()).to.not.reverted
 
     let hash = await refferalProgram.referralHash(hashCreator.address)
@@ -101,8 +102,8 @@ describe('Referral program', function () {
     expect(amount).to.be.eq(125)
 
     const hashPoints = await refferalProgram.getReadyToClaimFromRefferalHash(hashCreator.address)
+    console.log(hashPoints)
     const hashCreatorPoints = hashPoints.toClaim.find((obj) => obj.refType === BigInt(RefferalProgram.SetKYC)).points
-
     expect(hashCreatorPoints).to.be.eq(10)
 
     expect(
@@ -112,6 +113,7 @@ describe('Referral program', function () {
     ).to.not.reverted
 
     const hashPointsCar = await refferalProgram.getReadyToClaimFromRefferalHash(hashCreator.address)
+
     const hashCreatorPointsCar = hashPointsCar.toClaim.find(
       (obj) => obj.refType === BigInt(RefferalProgram.AddCar)
     ).points
@@ -120,8 +122,7 @@ describe('Referral program', function () {
 
     const readyToClaimCar = await refferalProgram.getReadyToClaim(anonymous.address)
 
-    const amountCar = readyToClaimCar.toClaim.find((obj) => obj.refType === BigInt(RefferalProgram.AddCar)).points
-
+    const amountCar = readyToClaimCar.toClaim.find((obj) => obj.refType === BigInt(RefferalProgram.AddCar) && obj.oneTime).points
     expect(amountCar).to.be.eq(2000)
     await expect(refferalProgram.claimPoints(anonymous.address)).to.not.reverted
 

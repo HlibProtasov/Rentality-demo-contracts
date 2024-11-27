@@ -32,12 +32,8 @@ contract RentalityReferralProgram is
   mapping(address => uint) public addressToPoints;
   mapping(uint => TripDiscounts) private tripIdToDisctount;
   mapping(address => Schemas.ReadyToClaim[]) private addressToReadyToClaim;
-  mapping(address => Schemas.ReadyToClaimRefferalHash[]) private addressToReadyToClaimFromHash; //unused
   mapping(uint => uint) private carIdToDailyClaimed;
-  mapping(address => Schemas.RefferalHistory[]) private userPointsHistory; // unused
   RentalityCarToken private carService;
- mapping(address => Schemas.History[]) private userHistory; // unused
-
   mapping(address => Schemas.ProgramHistory[]) private userProgramHistory;
 
   
@@ -163,7 +159,7 @@ contract RentalityReferralProgram is
       result[index] = Schemas.ReadyToClaim(dailiListingPoints, Schemas.RefferalProgram.DailyListing, false);
     }
 
-    return RentalityRefferalLib.formatReadyToClaim(Schemas.ReadyToClaimDTO(result, counter, toNextDaily));
+    return RentalityRefferalLib.formatReadyToClaim(Schemas.ReadyToClaimDTO(result, counter, toNextDaily), this);
   }
 
   function getReadyToClaimFromRefferalHash(address user) public view returns (Schemas.RefferalHashDTO memory) {

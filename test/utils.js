@@ -11,14 +11,13 @@ const UserRole = {
 const RefferalProgram = {
   SetKYC: 0,
   PassCivic: 1,
-  AddFirstCar: 2,
-  AddCar: 3,
-  CreateTrip: 4,
-  FinishTripAsHost: 5,
-  FinishTripAsGuest: 6,
-  UnlistedCar: 7,
-  Daily: 8,
-  DailyListing: 9,
+  AddCar: 2,
+  CreateTrip: 3,
+  FinishTripAsHost: 4,
+  FinishTripAsGuest: 5,
+  UnlistedCar: 6,
+  Daily: 7,
+  DailyListing: 8,
 }
 
 const signTCMessage = async (user) => {

@@ -70,19 +70,20 @@ library RentalityRefferalLib {
   }
 
   function formatReadyToClaim(
-    Schemas.ReadyToClaimDTO memory toClaim
-  ) public pure returns (Schemas.ReadyToClaimDTO memory) {
-    Schemas.ReadyToClaim[] memory claim = new Schemas.ReadyToClaim[](uint(type(Schemas.RefferalProgram).max));
-    for (uint i = 0; i < uint(type(Schemas.RefferalProgram).max); i++) {
-      claim[i].refType = Schemas.RefferalProgram(i);
-    }
-    for (uint i = 0; i < toClaim.toClaim.length; i++) {
-      for (uint j = 0; j < claim.length; j++)
-        if (claim[j].refType == toClaim.toClaim[i].refType) {
-          claim[j].points += toClaim.toClaim[i].points;
-          claim[j].oneTime = toClaim.toClaim[i].oneTime;
+    Schemas.ReadyToClaimDTO memory toClaim,
+    RentalityReferralProgram refferalProgram
+  ) public view returns (Schemas.ReadyToClaimDTO memory) {
+    Schemas.ReadyToClaim[] memory claim = refferalProgram.getEmptyToClaim();
+    // for (uint i = 0; i < uint(type(Schemas.RefferalProgram).max); i++) {
+    //   claim[i].refType = Schemas.RefferalProgram(i);
+    // }
+    for (uint i = 0; i < claim.length; i++) {
+      for (uint j = 0; j < toClaim.toClaim.length; j++)
+        if (claim[i].refType == toClaim.toClaim[j].refType && claim[i].oneTime == toClaim.toClaim[j].oneTime) {
+          claim[i].points += toClaim.toClaim[j].points;
         }
     }
+  
     toClaim.toClaim = claim;
     return toClaim;
   }

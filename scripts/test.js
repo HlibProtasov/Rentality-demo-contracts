@@ -5,13 +5,17 @@ const { startDeploy } = require('./utils/deployHelper')
 const { emptyLocationInfo, getEmptySearchCarParams } = require('../test/utils')
 
 async function main() {
-  // let contract = await ethers.getContractAt('RentalityCarToken','0x3603108a50B6248e433b504436611905f5742356')
-  // console.log(await contract.updateGeoServiceAddress('0x09028ca45AF96a117CCa7b60229809aF473Cf964'))
-  await upgrades.forceImport('0x4c29f11D5d83F55570DCd38562A0906a5291f5a0',await ethers.getContractFactory('RentalityReferralProgram',{
-  libraries:{
-    RentalityRefferalLib:'0xe399Bf78E2A31075c9FebFce8b44A48184e79148'
-  }
-  }))
+  // await upgrades.forceImport('0x7e2D85C7143401722255c698dB111667cf3e49e2', await ethers.getContractFactory('RentalityPlatform',{
+  //   libraries: {
+  //     RentalityQuery: '0x45C184a5aBfbcea133c66090617DDED25e48bF63',
+  //     RentalityUtils: '0x218a24741B68981F778E52e9A6435dCC8B6533F7'
+  //   }
+  // }))
+  let contract = await ethers.getContractAt('RentalityAdminGateway','0xCB3A446A43F14dbd1484F7a73E46eDCe132D44A5')
+  console.log(await contract.updateRefferalProgramService('0x32db650576Bbed5d65C729fB82115766E48c036E'))
+
+let platform = await ethers.getContractAt('RentalityPlatform','0x7e2D85C7143401722255c698dB111667cf3e49e2')
+console.log(await platform.updateServiceAddresses('0xCB3A446A43F14dbd1484F7a73E46eDCe132D44A5'))
 }
 
 main()
