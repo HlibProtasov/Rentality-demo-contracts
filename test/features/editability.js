@@ -8,6 +8,7 @@ const {
   emptyLocationInfo,
   zeroHash,
   signLocationInfo,
+  emptySignedLocationInfo
 } = require('../utils')
 const { loadFixture } = require('@nomicfoundation/hardhat-network-helpers')
 
@@ -79,12 +80,16 @@ describe('Ability to update car during trip', function () {
       .connect(guest)
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
     await expect(
-      await rentalityPlatform.connect(guest).createTripRequest(
+      await rentalityPlatform.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
           endDateTime: Date.now() + 85600,
           currencyType: ethToken,
+          insurancePaid: false,
+          photo: '',
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -119,12 +124,16 @@ describe('Ability to update car during trip', function () {
       .connect(guest)
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
     await expect(
-      await rentalityPlatform.connect(guest).createTripRequest(
+      await rentalityPlatform.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
           endDateTime: Date.now() + 84700,
           currencyType: ethToken,
+          insurancePaid: false,
+          photo: '',
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )
@@ -145,6 +154,8 @@ describe('Ability to update car during trip', function () {
       insuranceIncluded: true,
       engineType: 1,
       tokenUri: 'uri',
+      insuranceRequired: false,
+      insurancePriceInUsdCents: 0,
     }
 
     let locationInfo = {
@@ -182,12 +193,16 @@ describe('Ability to update car during trip', function () {
       .connect(guest)
       .calculatePaymentsWithDelivery(1, 1, ethToken, emptyLocationInfo, emptyLocationInfo)
     await expect(
-      await rentalityPlatform.connect(guest).createTripRequest(
+      await rentalityPlatform.connect(guest).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
           endDateTime: Date.now() + 84500,
           currencyType: ethToken,
+          insurancePaid: false,
+          photo: '',
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result.totalPrice }
       )

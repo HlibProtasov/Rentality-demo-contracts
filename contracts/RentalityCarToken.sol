@@ -58,12 +58,9 @@ contract RentalityCarToken is ERC721URIStorageUpgradeable, UUPSOwnable {
     geoService = IRentalityGeoService(_geoService);
   }
 
-  /// @notice Updates the address of the GeoParser contract.
-  /// @param newGeoParserAddress The new address of the GeoParser contract.
-  function updateGeoParsesAddress(address newGeoParserAddress) public onlyAdmin {
-    geoService.updateParserAddress(newGeoParserAddress);
+  function getEngineService() public view returns (RentalityEnginesService) {
+    return engineService;
   }
-
   /// @notice Returns the total supply of cars.
   /// @return The total number of cars in the system.
   function totalSupply() public view returns (uint) {
@@ -346,7 +343,7 @@ contract RentalityCarToken is ERC721URIStorageUpgradeable, UUPSOwnable {
   /// @param user The address of the user for whom to fetch available cars.
   /// @param searchCarParams The parameters used to filter available cars.
   /// @return An array of CarInfo representing the available cars for the user.
-  function fetchAvailableCarsForUser(
+ function fetchAvailableCarsForUser(
     address user,
     Schemas.SearchCarParams memory searchCarParams
   ) public view returns (Schemas.CarInfo[] memory) {
@@ -417,6 +414,7 @@ contract RentalityCarToken is ERC721URIStorageUpgradeable, UUPSOwnable {
 
     return result;
   }
+
 
   /// @notice Verifies the authenticity of the signed location information.
   /// @dev This function checks the validity of the signed location information using the geoService.

@@ -21,6 +21,7 @@ contract RentalityAdminGateway is UUPSOwnable, IRentalityAdminGateway {
   RentalityClaimService private claimService;
   RentalityCarDelivery private deliveryService;
   RentalityView private viewService;
+  RentalityInsurance private insuranceService;
   RentalityReferralProgram private refferalProgram;
   /// @notice Ensures that the caller is either an admin, the contract owner, or an admin from the origin transaction.
   modifier onlyAdmin() {
@@ -44,6 +45,14 @@ contract RentalityAdminGateway is UUPSOwnable, IRentalityAdminGateway {
         deliveryService,
         viewService
       );
+  }
+
+  function getInsuranceService() public view returns (RentalityInsurance) {
+    return insuranceService;
+  }
+
+  function setInsuranceService(address insurance) public onlyAdmin {
+    insuranceService = RentalityInsurance(insurance);
   }
 
   /// @notice Retrieves the address of the RentalityCarToken contract.
@@ -304,7 +313,7 @@ contract RentalityAdminGateway is UUPSOwnable, IRentalityAdminGateway {
 
     Schemas.AdminCarDTO[] memory cars = new Schemas.AdminCarDTO[](endIndex - startIndex + 1);
     for (uint i = startIndex; i <= endIndex; i++) {
-      cars[i - startIndex].car = RentalityQuery.getCarDetails(contracts, i);
+      cars[i - startIndex].car = RentalityUtils.getCarDetails(contracts, i);
       cars[i - startIndex].carMetadataURI = contracts.carService.tokenURI(i);
     }
     return Schemas.AllCarsDTO(cars, totalPageCount);
@@ -396,6 +405,8 @@ contract RentalityAdminGateway is UUPSOwnable, IRentalityAdminGateway {
     address claimServiceAddress,
     address carDeliveryAddress,
     address viewServiceAddress,
+    address insuranceServiceAddress,
+    address rentalityTripsViewAddress,
     address refferalProgramAddress
   ) public initializer {
     carService = RentalityCarToken(carServiceAddress);
@@ -408,7 +419,7 @@ contract RentalityAdminGateway is UUPSOwnable, IRentalityAdminGateway {
     deliveryService = RentalityCarDelivery(carDeliveryAddress);
     viewService = RentalityView(viewServiceAddress);
 
-    viewService.updateServiceAddresses(getRentalityContracts());
+    viewService.updateServiceAddresses(getRentalityContracts(), insuranceServiceAddress, rentalityTripsViewAddress);
     refferalProgram = RentalityReferralProgram(refferalProgramAddress);
     __Ownable_init();
   }

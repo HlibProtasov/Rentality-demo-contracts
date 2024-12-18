@@ -107,7 +107,7 @@ interface IRentalityGateway {
   /// @notice Get information about a specific car by ID.
   /// @param carId The ID of the car.
   /// @return CarInfo structure containing details about the specified car.
-  function getCarInfoById(uint256 carId) external view returns (Schemas.CarInfo memory);
+  function getCarInfoById(uint256 carId) external view returns (Schemas.CarInfoWithInsurance memory);
 
   /// @notice Retrieves detailed information about a car.
   /// @param carId The ID of the car for which details are requested.
@@ -161,7 +161,8 @@ interface IRentalityGateway {
     uint256 tripId
   ) external view returns (string memory guestPhoneNumber, string memory hostPhoneNumber);
 
-  /// ------------------------------
+   
+    /// ------------------------------
   ///     HOST
   /// ------------------------------
 
@@ -258,6 +259,7 @@ interface IRentalityGateway {
   /// and other relevant details depends on engine.
   function checkOutByGuest(uint256 tripId, uint64[] memory panelParams, bytes32 refferalHash) external;
 
+
   /// ------------------------------
   /// CLAIMS functions
   /// ------------------------------
@@ -278,20 +280,31 @@ interface IRentalityGateway {
   /// @param request Details of the claim to be created.
   function createClaim(Schemas.CreateClaimRequest memory request) external;
 
-  /// @notice Calculates the claim value for a specified insurance claim
-  /// @param claimId The ID of the insurance claim for which the value is being calculated
-  /// @return The calculated claim value in the specified currency
-  function calculateClaimValue(uint claimId) external view returns (uint);
-
-  /// @notice Pays a specific claim through the Rentality platform, transferring funds and handling excess.
-  /// @dev This function delegates the claim payment to the Rentality platform contract.
-  /// @param claimId ID of the claim to be paid.
-  function payClaim(uint256 claimId) external payable;
-
   /// @notice Rejects a specific claim through the Rentality platform.
   /// @dev This function delegates the claim rejection to the Rentality platform contract.
   /// @param claimId ID of the claim to be rejected.
   function rejectClaim(uint256 claimId) external;
+
+    /// @notice Calculates the claim value for a specified insurance claim
+    /// @param claimId The ID of the insurance claim for which the value is being calculated
+    /// @return The calculated claim value in the specified currency
+    function calculateClaimValue(uint claimId) external view returns (uint);
+
+    /// @notice Pays a specific claim through the Rentality platform, transferring funds and handling excess.
+  /// @dev This function delegates the claim payment to the Rentality platform contract.
+  /// @param claimId ID of the claim to be paid.
+  function payClaim(uint256 claimId) external payable;
+
+  /// @notice Updates the status of a specific claim through the Rentality platform.
+  /// @dev This function delegates the claim update to the Rentality platform contract.
+  /// @param claimId ID of the claim to be updated.
+  //  function updateClaim(uint256 claimId) external;
+
+  /// @notice Gets detailed information about a specific claim through the Rentality platform.
+  /// @dev This function retrieves the claim information using the Rentality platform contract.
+  /// @param claimId ID of the claim.
+  /// @return Full information about the claim.
+  //  function getClaim(uint256 claimId) external view returns (Schemas.FullClaimInfo memory);
 
   /// ------------------------------
   /// CHAT functions
@@ -301,6 +314,28 @@ interface IRentalityGateway {
   /// @param host A boolean indicating whether to retrieve insurance for hosts (true) or guests (false)
   /// @return An array of chat information.
   function getChatInfoFor(bool host) external view returns (Schemas.ChatInfo[] memory);
+
+    /// ------------------------------
+    /// GENERAL functions
+    /// ------------------------------
+
+  /// @notice Retrieves insurance info
+  /// @param host A boolean indicating whether to retrieve insurance for hosts (true) or guests (false)
+  /// @return An array of insurance options available for the specified host status
+  function getInsurancesBy(bool host) external view returns (Schemas.InsuranceDTO[] memory);
+
+  /// @notice Retrieves insurance information for the guest
+  /// @return An array of insurance information specific to the guest
+  function getMyInsurancesAsGuest() external view returns (Schemas.InsuranceInfo[] memory);
+
+  /// @notice Saves insurance information related to a specific trip
+  /// @param tripId The ID of the trip for which the insurance information is being saved
+  /// @param insuranceInfo A struct containing the details of the insurance to be saved
+  function saveTripInsuranceInfo(uint tripId, Schemas.SaveInsuranceRequest memory insuranceInfo) external;
+
+  /// @notice Saves insurance information for a guest
+  /// @param insuranceInfo A struct containing the details of the insurance requested by the guest
+  function saveGuestInsurance(Schemas.SaveInsuranceRequest memory insuranceInfo) external;
 
   /// ------------------------------
   /// GENERAL functions
@@ -331,6 +366,14 @@ interface IRentalityGateway {
   function getAllCars() external view returns (Schemas.CarInfo[] memory);
 
 
+  function checkCarAvailabilityWithDelivery(
+    uint carId,
+    uint64 startDateTime,
+    uint64 endDateTime,
+    Schemas.SearchCarParams memory searchParams,
+    Schemas.LocationInfo memory pickUpInfo,
+    Schemas.LocationInfo memory returnInfo
+  ) external view returns (Schemas.AvailableCarDTO memory);
 
   // function updateCarTokenUri(uint256 carId, string memory tokenUri) external;
   /// @notice Retrieves additional filter information based on the duration of the trip

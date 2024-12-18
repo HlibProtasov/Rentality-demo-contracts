@@ -60,9 +60,10 @@ interface Schemas {
     uint64 milesIncludedPerDay;
     uint32 timeBufferBetweenTripsInSec;
     string geoApiKey;
-    bool insuranceIncluded;
     SignedLocationInfo locationInfo;
     bool currentlyListed;
+    bool insuranceRequired;
+    uint insurancePriceInUsdCents;
   }
 
   /// @notice Struct to store input parameters for updating car information.
@@ -74,7 +75,8 @@ interface Schemas {
     uint64 milesIncludedPerDay;
     uint32 timeBufferBetweenTripsInSec;
     bool currentlyListed;
-    bool insuranceIncluded;
+    bool insuranceRequired;
+    uint insurancePriceInUsdCents;
     uint8 engineType;
     string tokenUri;
   }
@@ -101,7 +103,6 @@ interface Schemas {
     uint64 startDateTime;
     uint64 endDateTime;
     address currencyType;
-    // bool useRefferalDiscount;
   }
 
   struct CreateTripRequestWithDelivery {
@@ -111,7 +112,6 @@ interface Schemas {
     address currencyType;
     SignedLocationInfo pickUpInfo;
     SignedLocationInfo returnInfo;
-    // bool useRefferalDiscount;
   }
 
   /// @dev Enumeration representing verious states of a trip.
@@ -190,6 +190,9 @@ interface Schemas {
     LocationInfo returnLocation;
     string guestPhoneNumber;
     string hostPhoneNumber;
+    InsuranceInfo[] insurancesInfo;
+    uint paidForInsuranceInUsdCents;
+    string guestDrivingLicenseIssueCountry;
   }
 
   /// CHAT LOGIC
@@ -354,6 +357,7 @@ interface Schemas {
     uint64 endFuelLevel;
     uint64 startOdometer;
     uint64 endOdometer;
+    uint insuranceFee;
   }
 
   struct CalculatePaymentsDTO {
@@ -422,6 +426,39 @@ interface Schemas {
     uint64 dropOf;
     bool insuranceIncluded;
     LocationInfo locationInfo;
+    InsuranceCarInfo insuranceInfo;
+    bool isGuestHasInsurance;
+  }
+  struct AvailableCarDTO {
+    uint carId;
+    string brand;
+    string model;
+    uint32 yearOfProduction;
+    uint64 pricePerDayInUsdCents;
+    uint64 pricePerDayWithDiscount;
+    uint64 tripDays;
+    uint64 totalPriceWithDiscount;
+    uint64 taxes;
+    uint64 securityDepositPerTripInUsdCents;
+    uint8 engineType;
+    uint64 milesIncludedPerDay;
+    address host;
+    string hostName;
+    string hostPhotoUrl;
+    string metadataURI;
+    uint64 underTwentyFiveMilesInUsdCents;
+    uint64 aboveTwentyFiveMilesInUsdCents;
+    uint64 pickUp;
+    uint64 dropOf;
+    bool insuranceIncluded;
+    LocationInfo locationInfo;
+    InsuranceCarInfo insuranceInfo;
+    uint fuelPrice;
+    BaseDiscount carDiscounts;
+    uint64 salesTax;
+    uint64 governmentTax;
+    int128 distance;
+    bool isGuestHasInsurance;
   }
 
   struct GeoData {
@@ -451,6 +488,7 @@ interface Schemas {
     bool currentlyListed;
     LocationInfo locationInfo;
     string carVinNumber;
+    string carMetadataURI;
   }
 
   // Taxes
@@ -666,7 +704,7 @@ interface Schemas {
     struct RefferalHistory {
       int points;
       RefferalProgram method;
-    
+
     }
 
     struct History {
@@ -691,8 +729,54 @@ interface Schemas {
     Claim,
     Trip
   }
-   struct FilterInfoDTO {
+  struct FilterInfoDTO {
     uint64 maxCarPrice;
     uint minCarYearOfProduction;
+  }
+
+  /// Insurance Info
+  struct InsuranceCarInfo {
+    bool required;
+    uint priceInUsdCents;
+  }
+
+  struct SaveInsuranceRequest {
+    string companyName;
+    string policyNumber;
+    string photo;
+    string comment;
+    InsuranceType insuranceType;
+  }
+
+  struct InsuranceInfo {
+    string companyName;
+    string policyNumber;
+    string photo;
+    string comment;
+    InsuranceType insuranceType;
+    uint createdTime;
+    address createdBy;
+  }
+  enum InsuranceType {
+    None,
+    General,
+    OneTime
+  }
+  struct InsuranceDTO {
+    uint tripId;
+    string carBrand;
+    string carModel;
+    uint32 carYear;
+    InsuranceInfo insuranceInfo;
+    bool createdByHost;
+    string creatorPhoneNumber;
+    string creatorFullName;
+    uint64 startDateTime;
+    uint64 endDateTime;
+  }
+  struct CarInfoWithInsurance {
+    CarInfo carInfo;
+    InsuranceCarInfo insuranceInfo;
+    string carMetadataURI;
   }
 }

@@ -103,7 +103,6 @@
             { "type": "uint64", "name": "milesIncludedPerDay" },
             { "type": "uint32", "name": "timeBufferBetweenTripsInSec" },
             { "type": "string", "name": "geoApiKey" },
-            { "type": "bool", "name": "insuranceIncluded" },
             {
               "type": "tuple",
               "name": "locationInfo",
@@ -124,7 +123,9 @@
                 { "type": "bytes", "name": "signature" }
               ]
             },
-            { "type": "bool", "name": "currentlyListed" }
+            { "type": "bool", "name": "currentlyListed" },
+            { "type": "bool", "name": "insuranceRequired" },
+            { "type": "uint256", "name": "insurancePriceInUsdCents" }
           ]
         }
       ],
@@ -394,7 +395,7 @@
     },
     {
       "type": "function",
-      "name": "getGeoServiceAddress",
+      "name": "getEngineService",
       "constant": true,
       "stateMutability": "view",
       "payable": false,
@@ -403,12 +404,12 @@
     },
     {
       "type": "function",
-      "name": "getListingMoment",
+      "name": "getGeoServiceAddress",
       "constant": true,
       "stateMutability": "view",
       "payable": false,
-      "inputs": [{ "type": "uint256", "name": "carId" }],
-      "outputs": [{ "type": "uint256", "name": "" }]
+      "inputs": [],
+      "outputs": [{ "type": "address", "name": "" }]
     },
     {
       "type": "function",
@@ -638,7 +639,8 @@
             { "type": "uint64", "name": "milesIncludedPerDay" },
             { "type": "uint32", "name": "timeBufferBetweenTripsInSec" },
             { "type": "bool", "name": "currentlyListed" },
-            { "type": "bool", "name": "insuranceIncluded" },
+            { "type": "bool", "name": "insuranceRequired" },
+            { "type": "uint256", "name": "insurancePriceInUsdCents" },
             { "type": "uint8", "name": "engineType" },
             { "type": "string", "name": "tokenUri" }
           ]
@@ -656,7 +658,7 @@
             { "type": "string", "name": "timeZoneId" }
           ]
         },
-        { "type": "bool", "name": "updateLocation" }
+        { "type": "string", "name": "geoApiKey" }
       ],
       "outputs": []
     },
@@ -685,14 +687,6 @@
       "constant": false,
       "payable": false,
       "inputs": [{ "type": "address", "name": "_eventManager" }],
-      "outputs": []
-    },
-    {
-      "type": "function",
-      "name": "updateGeoParsesAddress",
-      "constant": false,
-      "payable": false,
-      "inputs": [{ "type": "address", "name": "newGeoParserAddress" }],
       "outputs": []
     },
     {

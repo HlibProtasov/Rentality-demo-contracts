@@ -119,6 +119,13 @@ contract RentalityGeoService is IRentalityGeoService, Initializable, UUPSAccess 
 
     return hash;
   }
+  function createSignedLocationInfo(Schemas.SignedLocationInfo memory info) public returns (bytes32) {
+    if (info.signature.length == 0) {
+      return bytes32('');
+    }
+    verifySignedLocationInfo(info);
+    return createLocationInfo(info.locationInfo);
+  }
 
   function hashLocationInfo(Schemas.LocationInfo memory info) public pure returns (bytes32) {
     if (bytes(info.longitude).length == 0) {
@@ -136,7 +143,7 @@ contract RentalityGeoService is IRentalityGeoService, Initializable, UUPSAccess 
   }
 
   function verifySignedLocationInfo(Schemas.SignedLocationInfo memory locationInfo) public view {
-    // verifier.verifySignedLocationInfo(locationInfo);
+    verifier.verifySignedLocationInfo(locationInfo);
   }
 
   function setLocationVerifier(address _verifier) public {

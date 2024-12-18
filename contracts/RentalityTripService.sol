@@ -40,6 +40,8 @@ contract RentalityTripService is Initializable, UUPSUpgradeable {
 
   mapping(uint => uint) public tripIdToEthSumInTripCreation;
   RentalityNotificationService private eventManager;
+  mapping(uint => uint[]) private carIdToActiveTrips;
+  mapping (uint => uint[]) private carIdToTrips;
 
   /// @dev Updates the address of the RentalityEventManager contract.
   /// @param _eventManager The address of the new RentalityEventManager contract.
@@ -95,6 +97,9 @@ contract RentalityTripService is Initializable, UUPSUpgradeable {
     if (milesIncludedPerDay == 0) {
       milesIncludedPerDay = 2 ** 32 - 1;
     }
+    carIdToActiveTrips[carId].push(newTripId);
+    carIdToTrips[carId].push(newTripId);
+
     paymentInfo.tripId = newTripId;
 
     Schemas.CarInfo memory carInfo = addresses.carService.getCarInfoById(carId);
@@ -137,10 +142,8 @@ contract RentalityTripService is Initializable, UUPSUpgradeable {
     );
     tripIdToEthSumInTripCreation[newTripId] = msgValue;
 
- eventManager.emitEvent(Schemas.EventType.Trip, newTripId, uint8(Schemas.TripStatus.Created), guest, host);
-
+    eventManager.emitEvent(Schemas.EventType.Trip, newTripId, uint8(Schemas.TripStatus.Created), guest, host);
     return newTripId;
-  
   }
 
   /// @notice Approves a trip by changing its status to Approved.
@@ -186,13 +189,13 @@ contract RentalityTripService is Initializable, UUPSUpgradeable {
     );
 
     require(
-      status == Schemas.TripStatus.Created ||
-        status == Schemas.TripStatus.Approved ||
-        status == Schemas.TripStatus.CheckedInByHost ||
+      idToTripInfo[tripId].status == Schemas.TripStatus.Created ||
+        idToTripInfo[tripId].status == Schemas.TripStatus.Approved ||
+        idToTripInfo[tripId].status == Schemas.TripStatus.CheckedInByHost ||
         controversialSituation,
       'The trip is not in status Created, Approved'
     );
-
+    _removeAcriveTrip(idToTripInfo[tripId].carId, tripId);
     idToTripInfo[tripId].status = Schemas.TripStatus.Canceled;
     idToTripInfo[tripId].rejectedDateTime = block.timestamp;
     idToTripInfo[tripId].rejectedBy = tx.origin;
@@ -222,6 +225,8 @@ contract RentalityTripService is Initializable, UUPSUpgradeable {
   ///   - panelParams[0]: Fuel level (e.g., as a percentage)
   ///   - panelParams[1]: Odometer reading (e.g., in kilometers or miles)
   ///   - Additional parameters can be added based on the engine and vehicle characteristics.
+  /// @param insuranceCompany The name of the insurance company covering the vehicle.
+  /// @param insuranceNumber The insurance policy number.
   function checkInByHost(
     uint256 tripId,
     uint64[] memory panelParams,
@@ -415,6 +420,7 @@ contract RentalityTripService is Initializable, UUPSUpgradeable {
 
     trip.status = Schemas.TripStatus.Finished;
 
+    _removeAcriveTrip(idToTripInfo[tripId].carId, tripId);
     trip.finishDateTime = block.timestamp;
     completedByAdmin[tripId] =
       addresses.userService.isAdmin(tx.origin) &&
@@ -484,6 +490,24 @@ contract RentalityTripService is Initializable, UUPSUpgradeable {
   ///  @return guestAddress The address of the guest.
   function getAddressesByTripId(uint256 tripId) external view returns (address hostAddress, address guestAddress) {
     return (idToTripInfo[tripId].host, idToTripInfo[tripId].guest);
+  }
+  function _removeAcriveTrip(uint carId, uint tripId) private {
+    uint[] memory activeTrips = carIdToActiveTrips[carId];
+    for (uint i = 0; i < activeTrips.length; i++) {
+      if(activeTrips[i] == tripId) {
+        for (uint j = i; j < activeTrips.length - 1; j++)
+        activeTrips[j] = activeTrips[j + 1];
+
+      carIdToActiveTrips[carId] = activeTrips;
+      break;
+      }
+      }
+  }
+  function getActiveTrips(uint carId) public view returns(uint[] memory) {
+    return carIdToActiveTrips[carId];
+  }
+  function getCarTrips(uint carId) public view returns(uint[] memory) {
+    return carIdToTrips[carId];
   }
 
   /// @param currencyConverterServiceAddress The address of the currency converter service.

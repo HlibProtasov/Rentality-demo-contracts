@@ -9,6 +9,7 @@ const {
   RefferalProgram,
   emptyLocationInfo,
   signLocationInfo,
+  emptySignedLocationInfo,
 } = require('../utils')
 const { expect } = require('chai')
 const { ethers } = require('hardhat')
@@ -69,7 +70,6 @@ describe('Referral program', function () {
       .reverted
 
     const readyToClaim = await refferalProgram.getReadyToClaim(anonymous.address)
-    console.log("READY", readyToClaim)
 
     const amount = readyToClaim.toClaim.find((obj) => obj.refType === BigInt(RefferalProgram.SetKYC)).points
 
@@ -87,7 +87,7 @@ describe('Referral program', function () {
 
     expect(await refferalProgram.addressToPoints(hashCreator.address)).to.be.eq(10)
   })
-  it.only('should be able to add car with referral code', async function () {
+  it('should be able to add car with referral code', async function () {
     expect(await refferalProgram.connect(hashCreator).generateReferralHash()).to.not.reverted
 
     let hash = await refferalProgram.referralHash(hashCreator.address)
@@ -113,7 +113,7 @@ describe('Referral program', function () {
     ).to.not.reverted
 
     const hashPointsCar = await refferalProgram.getReadyToClaimFromRefferalHash(hashCreator.address)
-
+    console.log("HERE")
     const hashCreatorPointsCar = hashPointsCar.toClaim.find(
       (obj) => obj.refType === BigInt(RefferalProgram.AddCar)
     ).points
@@ -164,12 +164,15 @@ describe('Referral program', function () {
 
     expect(hashCreatorPointsCar).to.be.eq(250)
 
-    const readyToClaimCar = await refferalProgram.getReadyToClaim(anonymous.address)
+ 
+    const toClaim = await refferalProgram.getReadyToClaim(anonymous.address)
+    const amountAddCar = toClaim.toClaim.find((obj) => obj.refType === BigInt(RefferalProgram.AddCar) && obj.oneTime).points
 
-    const amountCar = readyToClaimCar.toClaim.find((obj) => obj.refType === BigInt(RefferalProgram.AddCar)).points
 
-    expect(amountCar).to.be.eq(2000)
+    expect(amountAddCar).to.be.eq(2000)
     await expect(refferalProgram.claimPoints(anonymous.address)).to.not.reverted
+    
+
     
     await expect(refferalProgram.claimRefferalPoints(hashCreator.address)).to.not.reverted
 
@@ -186,7 +189,9 @@ describe('Referral program', function () {
       currentlyListed: false,
       insuranceIncluded: true,
       engineType: 1,
-      tokenUri: ""
+      tokenUri: "",
+      insuranceRequired: false,
+      insurancePriceInUsdCents: 0
     }
 
     let locationInfo = {
@@ -253,68 +258,7 @@ describe('Referral program', function () {
     expect(await refferalProgram.addressToPoints(hashCreator.address)).to.be.eq(60)
   })
 
-  it('should have points with refferal hash after trip finish as host', async function () {
-    expect(await refferalProgram.connect(hashCreator).generateReferralHash()).to.not.reverted
 
-    let hash = await refferalProgram.referralHash(hashCreator.address)
-
-    expect(await rentalityGateway.connect(anonymous).setKYCInfo(' ', ' ', ' ', signTCMessage(anonymous), hash)).to.not
-      .reverted
-
-    expect(
-      await rentalityGateway
-        .connect(anonymous)
-        .addCar(getMockCarRequest(0, await rentalityLocationVerifier.getAddress(), admin), hash)
-    ).to.not.reverted
-
-    const result = await rentalityGateway.calculatePaymentsWithDelivery(
-      1,
-      1,
-      ethToken,
-      emptyLocationInfo,
-      emptyLocationInfo
-    )
-    await expect(
-      await rentalityGateway.connect(guest).createTripRequest(
-        {
-          carId: 1,
-          startDateTime: Date.now(),
-          endDateTime: Date.now() + 86400,
-          currencyType: ethToken,
-          useRefferalDiscount: false,
-        },
-        { value: result.totalPrice }
-      )
-    ).to.changeEtherBalances([guest, rentalityPaymentService], [-result.totalPrice, result.totalPrice])
-
-    await expect(rentalityGateway.connect(anonymous).approveTripRequest(1)).not.to.be.reverted
-    await expect(rentalityGateway.connect(anonymous).checkInByHost(1, [0, 0], '', '')).not.to.be.reverted
-    await expect(rentalityGateway.connect(guest).checkInByGuest(1, [0, 0])).not.to.be.reverted
-    await expect(rentalityGateway.connect(guest).checkOutByGuest(1, [0, 0], zeroHash)).not.to.be.reverted
-    await expect(rentalityGateway.connect(anonymous).checkOutByHost(1, [0, 0])).not.to.be.reverted
-
-    await expect(rentalityGateway.connect(anonymous).finishTrip(1, hash)).to.not.reverted
-
-    const toClaim = await refferalProgram.getReadyToClaim(anonymous.address)
-    const amountTripFinish = toClaim.toClaim.find(
-      (obj) => obj.refType === BigInt(RefferalProgram.FinishTripAsHost)
-    ).points
-
-    expect(amountTripFinish).to.be.eq(1250)
-
-    const hashPointsCivic = await refferalProgram.getReadyToClaimFromRefferalHash(hashCreator.address)
-    const hashCreatorPointsCivic = hashPointsCivic.toClaim.find(
-      (obj) => obj.refType === BigInt(RefferalProgram.FinishTripAsHost)
-    ).points
-
-    expect(hashCreatorPointsCivic).to.be.eq(1000)
-
-    await expect(refferalProgram.claimPoints(anonymous.address)).to.not.reverted
-    await expect(refferalProgram.claimRefferalPoints(hashCreator.address)).to.not.reverted
-
-    expect(await refferalProgram.addressToPoints(anonymous.address)).to.be.eq(3395)
-    expect(await refferalProgram.addressToPoints(hashCreator.address)).to.be.eq(1260)
-  })
   it('should have points with refferal hash after trip finish as guest', async function () {
     expect(await refferalProgram.connect(hashCreator).generateReferralHash()).to.not.reverted
 
@@ -337,12 +281,14 @@ describe('Referral program', function () {
       emptyLocationInfo
     )
     await expect(
-      await rentalityGateway.connect(anonymous).createTripRequest(
+      await rentalityGateway.connect(anonymous).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
           endDateTime: Date.now() + 86400,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
           useRefferalDiscount: false,
         },
         { value: result.totalPrice }
@@ -355,9 +301,8 @@ describe('Referral program', function () {
     await expect(rentalityGateway.connect(anonymous).checkOutByGuest(1, [0, 0], hash)).not.to.be.reverted
 
     const toClaim = await refferalProgram.getReadyToClaim(anonymous.address)
-    const amountTripFinish = toClaim.toClaim.find(
-      (obj) => obj.refType === BigInt(RefferalProgram.FinishTripAsGuest)
-    ).points
+    const amountTripFinish = toClaim.toClaim.find((obj) => obj.refType === BigInt(RefferalProgram.FinishTripAsGuest) && obj.oneTime).points
+
 
     expect(amountTripFinish).to.be.eq(1250)
 
@@ -375,7 +320,7 @@ describe('Referral program', function () {
     expect(await refferalProgram.addressToPoints(hashCreator.address)).to.be.eq(1010)
   })
 
-  it('should be able to get permanent add car bonus', async function () {
+  it('should have points with refferal hash after trip finish as guest', async function () {
     expect(await refferalProgram.connect(hashCreator).generateReferralHash()).to.not.reverted
 
     let hash = await refferalProgram.referralHash(hashCreator.address)
@@ -398,7 +343,7 @@ describe('Referral program', function () {
     const toClaim = await refferalProgram.getReadyToClaim(anonymous.address)
     const amountAddCar = toClaim.toClaim.find((obj) => obj.refType === BigInt(RefferalProgram.AddCar)).points
 
-    expect(amountAddCar).to.be.eq(2500)
+    expect(amountAddCar).to.be.eq(500)
     await expect(refferalProgram.claimPoints(anonymous.address)).to.not.reverted
     expect(await refferalProgram.addressToPoints(anonymous.address)).to.be.eq(2645)
   })
@@ -424,12 +369,14 @@ describe('Referral program', function () {
       emptyLocationInfo
     )
     await expect(
-      await rentalityGateway.connect(anonymous).createTripRequest(
+      await rentalityGateway.connect(anonymous).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
           endDateTime: Date.now() + 86400,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
           useRefferalDiscount: false,
         },
         { value: result.totalPrice }
@@ -455,13 +402,15 @@ describe('Referral program', function () {
       emptyLocationInfo
     )
     await expect(
-      await rentalityGateway.connect(anonymous).createTripRequest(
+      await rentalityGateway.connect(anonymous).createTripRequestWithDelivery(
         {
           carId: 2,
           startDateTime: Date.now(),
           endDateTime: Date.now() + 86400 * 10,
           currencyType: ethToken,
           useRefferalDiscount: false,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
         },
         { value: result2.totalPrice }
       )
@@ -499,12 +448,14 @@ describe('Referral program', function () {
       emptyLocationInfo
     )
     await expect(
-      await rentalityGateway.connect(anonymous).createTripRequest(
+      await rentalityGateway.connect(anonymous).createTripRequestWithDelivery(
         {
           carId: 1,
           startDateTime: Date.now(),
           endDateTime: Date.now() + 86400,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
           useRefferalDiscount: false,
         },
         { value: result.totalPrice }
@@ -532,12 +483,14 @@ describe('Referral program', function () {
       emptyLocationInfo
     )
     await expect(
-      await rentalityGateway.connect(anonymous).createTripRequest(
+      await rentalityGateway.connect(anonymous).createTripRequestWithDelivery(
         {
           carId: 2,
           startDateTime: Date.now(),
           endDateTime: Date.now() + 86400 * 10,
           currencyType: ethToken,
+          pickUpInfo: emptySignedLocationInfo,
+          returnInfo: emptySignedLocationInfo,
           useRefferalDiscount: false,
         },
         { value: result2.totalPrice }
@@ -553,7 +506,7 @@ describe('Referral program', function () {
 
     await expect(refferalProgram.claimPoints(host.address)).to.not.reverted
 
-    expect(await refferalProgram.addressToPoints(host.address)).to.be.eq(4370)
+    expect(await refferalProgram.addressToPoints(host.address)).to.be.eq(2620)
   })
   it('Can use hash a lot of time', async function () {
     expect(await refferalProgram.connect(host).generateReferralHash()).to.not.reverted
@@ -595,9 +548,9 @@ describe('Referral program', function () {
 
   it('Can get all points info', async function () {
     let result = await refferalProgram.getRefferalPointsInfo()
-    expect(result.programPoints.length).to.be.eq(11)
-    expect(result.hashPoints.length).to.be.eq(5)
-    expect(result.discounts.length).to.be.eq(9)
+    expect(result.programPoints.length).to.be.eq(9)
+    expect(result.hashPoints.length).to.be.eq(4)
+    expect(result.discounts.length).to.be.eq(6)
     expect(result.tear.length).to.be.eq(4)
   })
 

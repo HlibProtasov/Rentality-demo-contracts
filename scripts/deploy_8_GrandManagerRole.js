@@ -33,6 +33,7 @@ async function main() {
     'rentalityPaymentServiceAddress'
   )
   const rentalityView = checkNotNull(addresses['RentalityView'], 'RentalityViewAddress')
+  const rentalityTripsView = checkNotNull(addresses['RentalityTripsView'], 'RentalityTripsViewAddress')
   const rentalityCarDelivery = checkNotNull(addresses['RentalityCarDelivery'], 'RentalityCarDelivery')
   const rentalityClaimService = checkNotNull(addresses['RentalityClaimService'], 'RentalityClaimService')
 
@@ -51,6 +52,7 @@ async function main() {
   await rentalityUserServiceContract.grantManagerRole(rentalityEngineAddress)
   await rentalityUserServiceContract.grantManagerRole(rentalityPaymentServiceAddress)
   await rentalityUserServiceContract.grantManagerRole(rentalityCarDelivery)
+  await rentalityUserServiceContract.grantManagerRole(rentalityTripsView)
   await rentalityUserServiceContract.grantManagerRole(rentalityClaimService)
   console.log('manager role was granded')
 }
