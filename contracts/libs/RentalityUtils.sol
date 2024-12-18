@@ -163,11 +163,6 @@ library RentalityUtils {
     return uint64(Math.ceilDiv(duration, 1 days));
   }
 
-  /// @notice Populates an array of chat information using data from trips, user service, and car service.
-  /// @return chatInfoList Array of IRentalityGateway.ChatInfo structures.
-
-
-
   /// not using
   /// @notice Parses a response string containing geolocation data.
   /// @param response The response string to parse.
@@ -697,9 +692,10 @@ library RentalityUtils {
   /// @return Returns true if the car is editable, otherwise false.
   function isCarEditable(RentalityContract memory contracts, uint carId) public view returns (bool) {
     RentalityTripService tripService = contracts.tripService;
-    uint[] memory trips = tripService.getActiveTrips(carId);
-    for (uint i = 0; i < trips.length; i++) {
-      Schemas.Trip memory tripInfo = tripService.getTrip(trips[i]);
+    uint[] memory carTrips = tripService.getActiveTrips(carId);
+
+    for (uint i = 0; i < carTrips.length; i++) {
+      Schemas.Trip memory tripInfo = tripService.getTrip(carTrips[i]);
 
       if (
         tripInfo.carId == carId &&
