@@ -58,6 +58,17 @@ contract RentalityUserService is AccessControlUpgradeable, UUPSUpgradeable, IRen
     kycInfo.TCSignature = TCSignature;
   }
 
+   function setMyCivicKYCInfo(address user, Schemas.CivicKYCInfo memory civicKycInfo) public {
+    require(hasRole(MANAGER_ROLE, msg.sender), 'Only manager');
+    Schemas.KYCInfo storage kycInfo = kycInfos[user];
+
+    kycInfo.surname = civicKycInfo.fullName;
+    kycInfo.licenseNumber = civicKycInfo.licenseNumber;
+    kycInfo.expirationDate = civicKycInfo.expirationDate;
+    additionalKycInfo[user].email = civicKycInfo.email;
+    additionalKycInfo[user].issueCountry = civicKycInfo.issueCountry;
+  }
+
   function setCivicKYCInfo(address user, Schemas.CivicKYCInfo memory civicKycInfo) public {
     require(hasRole(KYC_COMMISSION_MANAGER_ROLE, tx.origin), 'Only KYC manager');
     Schemas.KYCInfo storage kycInfo = kycInfos[user];
