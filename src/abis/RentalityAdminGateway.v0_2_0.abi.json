@@ -149,7 +149,9 @@
                         { "type": "string", "name": "longitude" },
                         { "type": "string", "name": "timeZoneId" }
                       ]
-                    }
+                    },
+                    { "type": "string", "name": "carVinNumber" },
+                    { "type": "string", "name": "carMetadataURI" }
                   ]
                 },
                 { "type": "string", "name": "carMetadataURI" }
@@ -441,7 +443,8 @@
         { "type": "address", "name": "claimServiceAddress" },
         { "type": "address", "name": "carDeliveryAddress" },
         { "type": "address", "name": "viewServiceAddress" },
-        { "type": "address", "name": "insuranceServiceAddress" }
+        { "type": "address", "name": "insuranceServiceAddress" },
+        { "type": "address", "name": "rentalityTripsViewAddress" }
       ],
       "outputs": []
     },
@@ -596,14 +599,6 @@
       "constant": false,
       "payable": false,
       "inputs": [{ "type": "address", "name": "contractAddress" }],
-      "outputs": []
-    },
-    {
-      "type": "function",
-      "name": "updateGeoParserAddress",
-      "constant": false,
-      "payable": false,
-      "inputs": [{ "type": "address", "name": "newGeoParserAddress" }],
       "outputs": []
     },
     {

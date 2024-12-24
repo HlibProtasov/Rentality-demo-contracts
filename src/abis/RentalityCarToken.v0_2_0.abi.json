@@ -47,38 +47,6 @@
     {
       "type": "event",
       "anonymous": false,
-      "name": "CarAddedSuccess",
-      "inputs": [
-        { "type": "uint256", "name": "CarId", "indexed": false },
-        { "type": "string", "name": "carVinNumber", "indexed": false },
-        { "type": "address", "name": "createdBy", "indexed": false },
-        { "type": "uint64", "name": "pricePerDayInUsdCents", "indexed": false },
-        { "type": "bool", "name": "currentlyListed", "indexed": false }
-      ]
-    },
-    {
-      "type": "event",
-      "anonymous": false,
-      "name": "CarRemovedSuccess",
-      "inputs": [
-        { "type": "uint256", "name": "carId", "indexed": false },
-        { "type": "string", "name": "CarVinNumber", "indexed": false },
-        { "type": "address", "name": "removedBy", "indexed": false }
-      ]
-    },
-    {
-      "type": "event",
-      "anonymous": false,
-      "name": "CarUpdatedSuccess",
-      "inputs": [
-        { "type": "uint256", "name": "carId", "indexed": false },
-        { "type": "uint64", "name": "pricePerDayInUsdCents", "indexed": false },
-        { "type": "bool", "name": "currentlyListed", "indexed": false }
-      ]
-    },
-    {
-      "type": "event",
-      "anonymous": false,
       "name": "Initialized",
       "inputs": [{ "type": "uint8", "name": "version", "indexed": false }]
     },
@@ -427,6 +395,15 @@
     },
     {
       "type": "function",
+      "name": "getEngineService",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
+      "outputs": [{ "type": "address", "name": "" }]
+    },
+    {
+      "type": "function",
       "name": "getGeoServiceAddress",
       "constant": true,
       "stateMutability": "view",
@@ -442,7 +419,8 @@
       "inputs": [
         { "type": "address", "name": "geoServiceAddress" },
         { "type": "address", "name": "engineServiceAddress" },
-        { "type": "address", "name": "userServiceAddress" }
+        { "type": "address", "name": "userServiceAddress" },
+        { "type": "address", "name": "eventManagerAddress" }
       ],
       "outputs": []
     },
@@ -662,7 +640,9 @@
             { "type": "uint32", "name": "timeBufferBetweenTripsInSec" },
             { "type": "bool", "name": "currentlyListed" },
             { "type": "bool", "name": "insuranceRequired" },
-            { "type": "uint256", "name": "insurancePriceInUsdCents" }
+            { "type": "uint256", "name": "insurancePriceInUsdCents" },
+            { "type": "uint8", "name": "engineType" },
+            { "type": "string", "name": "tokenUri" }
           ]
         },
         {
@@ -703,10 +683,10 @@
     },
     {
       "type": "function",
-      "name": "updateGeoParsesAddress",
+      "name": "updateEventServiceAddress",
       "constant": false,
       "payable": false,
-      "inputs": [{ "type": "address", "name": "newGeoParserAddress" }],
+      "inputs": [{ "type": "address", "name": "_eventManager" }],
       "outputs": []
     },
     {

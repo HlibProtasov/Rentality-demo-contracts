@@ -94,7 +94,7 @@
       "constant": true,
       "stateMutability": "view",
       "payable": false,
-      "inputs": [{ "type": "uint256", "name": "" }],
+      "inputs": [{ "type": "uint256", "name": "claimId" }],
       "outputs": [{ "type": "uint256", "name": "" }]
     },
     {
@@ -151,6 +151,137 @@
             { "type": "uint256", "name": "totalPrice" },
             { "type": "int256", "name": "currencyRate" },
             { "type": "uint8", "name": "currencyDecimals" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "function",
+      "name": "checkCarAvailabilityWithDelivery",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [
+        { "type": "uint256", "name": "carId" },
+        { "type": "uint64", "name": "startDateTime" },
+        { "type": "uint64", "name": "endDateTime" },
+        {
+          "type": "tuple",
+          "name": "searchParams",
+          "components": [
+            { "type": "string", "name": "country" },
+            { "type": "string", "name": "state" },
+            { "type": "string", "name": "city" },
+            { "type": "string", "name": "brand" },
+            { "type": "string", "name": "model" },
+            { "type": "uint32", "name": "yearOfProductionFrom" },
+            { "type": "uint32", "name": "yearOfProductionTo" },
+            { "type": "uint64", "name": "pricePerDayInUsdCentsFrom" },
+            { "type": "uint64", "name": "pricePerDayInUsdCentsTo" },
+            {
+              "type": "tuple",
+              "name": "userLocation",
+              "components": [
+                { "type": "string", "name": "userAddress" },
+                { "type": "string", "name": "country" },
+                { "type": "string", "name": "state" },
+                { "type": "string", "name": "city" },
+                { "type": "string", "name": "latitude" },
+                { "type": "string", "name": "longitude" },
+                { "type": "string", "name": "timeZoneId" }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "tuple",
+          "name": "pickUpInfo",
+          "components": [
+            { "type": "string", "name": "userAddress" },
+            { "type": "string", "name": "country" },
+            { "type": "string", "name": "state" },
+            { "type": "string", "name": "city" },
+            { "type": "string", "name": "latitude" },
+            { "type": "string", "name": "longitude" },
+            { "type": "string", "name": "timeZoneId" }
+          ]
+        },
+        {
+          "type": "tuple",
+          "name": "returnInfo",
+          "components": [
+            { "type": "string", "name": "userAddress" },
+            { "type": "string", "name": "country" },
+            { "type": "string", "name": "state" },
+            { "type": "string", "name": "city" },
+            { "type": "string", "name": "latitude" },
+            { "type": "string", "name": "longitude" },
+            { "type": "string", "name": "timeZoneId" }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "type": "tuple",
+          "name": "",
+          "components": [
+            { "type": "uint256", "name": "carId" },
+            { "type": "string", "name": "brand" },
+            { "type": "string", "name": "model" },
+            { "type": "uint32", "name": "yearOfProduction" },
+            { "type": "uint64", "name": "pricePerDayInUsdCents" },
+            { "type": "uint64", "name": "pricePerDayWithDiscount" },
+            { "type": "uint64", "name": "tripDays" },
+            { "type": "uint64", "name": "totalPriceWithDiscount" },
+            { "type": "uint64", "name": "taxes" },
+            { "type": "uint64", "name": "securityDepositPerTripInUsdCents" },
+            { "type": "uint8", "name": "engineType" },
+            { "type": "uint64", "name": "milesIncludedPerDay" },
+            { "type": "address", "name": "host" },
+            { "type": "string", "name": "hostName" },
+            { "type": "string", "name": "hostPhotoUrl" },
+            { "type": "string", "name": "metadataURI" },
+            { "type": "uint64", "name": "underTwentyFiveMilesInUsdCents" },
+            { "type": "uint64", "name": "aboveTwentyFiveMilesInUsdCents" },
+            { "type": "uint64", "name": "pickUp" },
+            { "type": "uint64", "name": "dropOf" },
+            { "type": "bool", "name": "insuranceIncluded" },
+            {
+              "type": "tuple",
+              "name": "locationInfo",
+              "components": [
+                { "type": "string", "name": "userAddress" },
+                { "type": "string", "name": "country" },
+                { "type": "string", "name": "state" },
+                { "type": "string", "name": "city" },
+                { "type": "string", "name": "latitude" },
+                { "type": "string", "name": "longitude" },
+                { "type": "string", "name": "timeZoneId" }
+              ]
+            },
+            {
+              "type": "tuple",
+              "name": "insuranceInfo",
+              "components": [
+                { "type": "bool", "name": "required" },
+                { "type": "uint256", "name": "priceInUsdCents" }
+              ]
+            },
+            { "type": "uint256", "name": "fuelPrice" },
+            {
+              "type": "tuple",
+              "name": "carDiscounts",
+              "components": [
+                { "type": "uint32", "name": "threeDaysDiscount" },
+                { "type": "uint32", "name": "sevenDaysDiscount" },
+                { "type": "uint32", "name": "thirtyDaysDiscount" },
+                { "type": "bool", "name": "initialized" }
+              ]
+            },
+            { "type": "uint64", "name": "salesTax" },
+            { "type": "uint64", "name": "governmentTax" },
+            { "type": "int128", "name": "distance" },
+            { "type": "bool", "name": "isGuestHasInsurance" }
           ]
         }
       ]
@@ -224,26 +355,6 @@
             { "type": "string", "name": "description" },
             { "type": "uint64", "name": "amountInUsdCents" },
             { "type": "string", "name": "photosUrl" }
-          ]
-        }
-      ],
-      "outputs": []
-    },
-    {
-      "type": "function",
-      "name": "createTripRequest",
-      "constant": false,
-      "stateMutability": "payable",
-      "payable": true,
-      "inputs": [
-        {
-          "type": "tuple",
-          "name": "request",
-          "components": [
-            { "type": "uint256", "name": "carId" },
-            { "type": "uint64", "name": "startDateTime" },
-            { "type": "uint64", "name": "endDateTime" },
-            { "type": "address", "name": "currencyType" }
           ]
         }
       ],
@@ -457,7 +568,9 @@
                 { "type": "string", "name": "longitude" },
                 { "type": "string", "name": "timeZoneId" }
               ]
-            }
+            },
+            { "type": "string", "name": "carVinNumber" },
+            { "type": "string", "name": "carMetadataURI" }
           ]
         }
       ]
@@ -505,7 +618,8 @@
                 { "type": "bool", "name": "required" },
                 { "type": "uint256", "name": "priceInUsdCents" }
               ]
-            }
+            },
+            { "type": "string", "name": "carMetadataURI" }
           ]
         }
       ]
@@ -693,6 +807,24 @@
     },
     {
       "type": "function",
+      "name": "getFilterInfo",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [{ "type": "uint64", "name": "duration" }],
+      "outputs": [
+        {
+          "type": "tuple",
+          "name": "",
+          "components": [
+            { "type": "uint64", "name": "maxCarPrice" },
+            { "type": "uint256", "name": "minCarYearOfProduction" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "function",
       "name": "getInsurancesBy",
       "constant": true,
       "stateMutability": "view",
@@ -722,7 +854,10 @@
             },
             { "type": "bool", "name": "createdByHost" },
             { "type": "string", "name": "creatorPhoneNumber" },
-            { "type": "string", "name": "creatorFullName" }
+            { "type": "string", "name": "creatorFullName" },
+            { "type": "uint64", "name": "startDateTime" },
+            { "type": "uint64", "name": "endDateTime" },
+            { "type": "bool", "name": "isActual" }
           ]
         }
       ]
@@ -1037,7 +1172,8 @@
                 { "type": "address", "name": "createdBy" }
               ]
             },
-            { "type": "uint256", "name": "paidForInsuranceInUsdCents" }
+            { "type": "uint256", "name": "paidForInsuranceInUsdCents" },
+            { "type": "string", "name": "guestDrivingLicenseIssueCountry" }
           ]
         }
       ]
@@ -1224,7 +1360,8 @@
                 { "type": "address", "name": "createdBy" }
               ]
             },
-            { "type": "uint256", "name": "paidForInsuranceInUsdCents" }
+            { "type": "uint256", "name": "paidForInsuranceInUsdCents" },
+            { "type": "string", "name": "guestDrivingLicenseIssueCountry" }
           ]
         }
       ]
@@ -1455,7 +1592,8 @@
                     { "type": "bool", "name": "required" },
                     { "type": "uint256", "name": "priceInUsdCents" }
                   ]
-                }
+                },
+                { "type": "bool", "name": "isGuestHasInsurance" }
               ]
             },
             { "type": "int256", "name": "distance" }
@@ -1499,6 +1637,26 @@
     },
     {
       "type": "function",
+      "name": "setMyCivicKYCInfo",
+      "constant": false,
+      "payable": false,
+      "inputs": [
+        {
+          "type": "tuple",
+          "name": "civicKycInfo",
+          "components": [
+            { "type": "string", "name": "fullName" },
+            { "type": "string", "name": "licenseNumber" },
+            { "type": "uint64", "name": "expirationDate" },
+            { "type": "string", "name": "issueCountry" },
+            { "type": "string", "name": "email" }
+          ]
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "type": "function",
       "name": "updateCarInfo",
       "constant": false,
       "payable": false,
@@ -1515,7 +1673,9 @@
             { "type": "uint32", "name": "timeBufferBetweenTripsInSec" },
             { "type": "bool", "name": "currentlyListed" },
             { "type": "bool", "name": "insuranceRequired" },
-            { "type": "uint256", "name": "insurancePriceInUsdCents" }
+            { "type": "uint256", "name": "insurancePriceInUsdCents" },
+            { "type": "uint8", "name": "engineType" },
+            { "type": "string", "name": "tokenUri" }
           ]
         }
       ],
@@ -1539,7 +1699,9 @@
             { "type": "uint32", "name": "timeBufferBetweenTripsInSec" },
             { "type": "bool", "name": "currentlyListed" },
             { "type": "bool", "name": "insuranceRequired" },
-            { "type": "uint256", "name": "insurancePriceInUsdCents" }
+            { "type": "uint256", "name": "insurancePriceInUsdCents" },
+            { "type": "uint8", "name": "engineType" },
+            { "type": "string", "name": "tokenUri" }
           ]
         },
         {

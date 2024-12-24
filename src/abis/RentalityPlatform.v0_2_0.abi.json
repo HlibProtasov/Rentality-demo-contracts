@@ -200,26 +200,6 @@
     },
     {
       "type": "function",
-      "name": "createTripRequest",
-      "constant": false,
-      "stateMutability": "payable",
-      "payable": true,
-      "inputs": [
-        {
-          "type": "tuple",
-          "name": "request",
-          "components": [
-            { "type": "uint256", "name": "carId" },
-            { "type": "uint64", "name": "startDateTime" },
-            { "type": "uint64", "name": "endDateTime" },
-            { "type": "address", "name": "currencyType" }
-          ]
-        }
-      ],
-      "outputs": []
-    },
-    {
-      "type": "function",
       "name": "createTripRequestWithDelivery",
       "constant": false,
       "stateMutability": "payable",
@@ -441,6 +421,26 @@
     },
     {
       "type": "function",
+      "name": "setMyCivicKYCInfo",
+      "constant": false,
+      "payable": false,
+      "inputs": [
+        {
+          "type": "tuple",
+          "name": "civicKycInfo",
+          "components": [
+            { "type": "string", "name": "fullName" },
+            { "type": "string", "name": "licenseNumber" },
+            { "type": "uint64", "name": "expirationDate" },
+            { "type": "string", "name": "issueCountry" },
+            { "type": "string", "name": "email" }
+          ]
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "type": "function",
       "name": "transferOwnership",
       "constant": false,
       "payable": false,
@@ -465,7 +465,9 @@
             { "type": "uint32", "name": "timeBufferBetweenTripsInSec" },
             { "type": "bool", "name": "currentlyListed" },
             { "type": "bool", "name": "insuranceRequired" },
-            { "type": "uint256", "name": "insurancePriceInUsdCents" }
+            { "type": "uint256", "name": "insurancePriceInUsdCents" },
+            { "type": "uint8", "name": "engineType" },
+            { "type": "string", "name": "tokenUri" }
           ]
         }
       ],
@@ -489,7 +491,9 @@
             { "type": "uint32", "name": "timeBufferBetweenTripsInSec" },
             { "type": "bool", "name": "currentlyListed" },
             { "type": "bool", "name": "insuranceRequired" },
-            { "type": "uint256", "name": "insurancePriceInUsdCents" }
+            { "type": "uint256", "name": "insurancePriceInUsdCents" },
+            { "type": "uint8", "name": "engineType" },
+            { "type": "string", "name": "tokenUri" }
           ]
         },
         {
@@ -518,21 +522,18 @@
     },
     {
       "type": "function",
-      "name": "updateCarTokenUri",
-      "constant": false,
-      "payable": false,
-      "inputs": [
-        { "type": "uint256", "name": "carId" },
-        { "type": "string", "name": "tokenUri" }
-      ],
-      "outputs": []
-    },
-    {
-      "type": "function",
       "name": "updateClaim",
       "constant": false,
       "payable": false,
       "inputs": [{ "type": "uint256", "name": "claimId" }],
+      "outputs": []
+    },
+    {
+      "type": "function",
+      "name": "updateServiceAddresses",
+      "constant": false,
+      "payable": false,
+      "inputs": [{ "type": "address", "name": "adminService" }],
       "outputs": []
     },
     {
