@@ -164,7 +164,7 @@ contract RentalityUserService is AccessControlUpgradeable, UUPSUpgradeable, IRen
   /// @param user The address of the user whose KYC and TC status is being checked.
   /// @return A boolean indicating whether the user has passed both KYC and TC.
   function hasPassedKYCAndTC(address user) public view returns (bool) {
-    return hasPassedKYC(user) && kycInfos[user].isTCPassed;
+    return kycInfos[user].isTCPassed;
   }
 
   /// @notice Checks if a user has admin role.

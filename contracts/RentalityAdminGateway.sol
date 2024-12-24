@@ -418,6 +418,7 @@ contract RentalityAdminGateway is UUPSOwnable, IRentalityAdminGateway {
     claimService = RentalityClaimService(claimServiceAddress);
     deliveryService = RentalityCarDelivery(carDeliveryAddress);
     viewService = RentalityView(viewServiceAddress);
+    insuranceService = RentalityInsurance(insuranceServiceAddress);
 
     viewService.updateServiceAddresses(getRentalityContracts(), insuranceServiceAddress, rentalityTripsViewAddress);
     refferalProgram = RentalityReferralProgram(refferalProgramAddress);
