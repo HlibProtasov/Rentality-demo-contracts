@@ -413,15 +413,6 @@
     },
     {
       "type": "function",
-      "name": "getListingMoment",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [{ "type": "uint256", "name": "carId" }],
-      "outputs": [{ "type": "uint256", "name": "" }]
-    },
-    {
-      "type": "function",
       "name": "initialize",
       "constant": false,
       "payable": false,
@@ -667,7 +658,7 @@
             { "type": "string", "name": "timeZoneId" }
           ]
         },
-        { "type": "bool", "name": "updateLocation" }
+        { "type": "string", "name": "geoApiKey" }
       ],
       "outputs": []
     },
