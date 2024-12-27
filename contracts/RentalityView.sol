@@ -342,7 +342,7 @@ contract RentalityView is UUPSUpgradeable, Initializable {
     );
     insuranceService = RentalityInsurance(insuranceAddress);
     tripsView = RentalityTripsView(tripsViewAddress);
-    tripsView.updateViewService(this);
+    // tripsView.updateViewService(this);
     refferalService = RentalityReferralProgram(refferalProgramAddress);
   }
 

@@ -100,13 +100,13 @@ contract RentalityReferralProgram is
   function claimPoints(address user) public {
     Schemas.ReadyToClaim[] memory toClaim = addressToReadyToClaim[user];
     if (toClaim.length > 0) {
-      addressToReadyToClaim[user] = new Schemas.ReadyToClaim[](0);
+     delete addressToReadyToClaim[user];
       uint total = 0;
       for (uint i = 0; i < toClaim.length; i++) {
         total += toClaim[i].points;
         userProgramHistory[user].push(Schemas.ProgramHistory(int(toClaim[i].points), block.timestamp, toClaim[i].refType, toClaim[i].oneTime));
       }
-      total += updateDaily();
+      total += updateDaily(user);
       (uint dailiListingPoints, uint[] memory cars) = RentalityRefferalLib.calculateListedCarsPoints(
         permanentSelectorToPoints[Schemas.RefferalProgram.DailyListing].points,
         user,
@@ -264,7 +264,7 @@ contract RentalityReferralProgram is
     addPermanentProgram(Schemas.RefferalProgram.AddCar, 500, bytes4(''));
     addPermanentProgram(Schemas.RefferalProgram.FinishTripAsGuest, 50, RentalityRefferalLib.finishTrip.selector);
     addPermanentProgram(Schemas.RefferalProgram.UnlistedCar, -500, RentalityRefferalLib.updateCar.selector);
-    addPermanentProgram(Schemas.RefferalProgram.Daily, 20, RentalityRefferalLib.updateDaily.selector);
+    addPermanentProgram(Schemas.RefferalProgram.Daily, 20, bytes4(''));
     addPermanentProgram(Schemas.RefferalProgram.DailyListing, 10, bytes4(''));
 
     manageRefHashesProgram(Schemas.RefferalProgram.SetKYC, 10);
